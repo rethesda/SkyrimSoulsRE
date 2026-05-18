@@ -24,6 +24,10 @@ namespace SkyrimSoulsRE
 			autoCloseManager->CheckAutoClose(RE::ContainerMenu::MENU_NAME);
 
 			break;
+
+		case RE::UI_MESSAGE_TYPE::kHide:
+			Util::ReleaseSkyUISearchWidgetTextInput(this->root);
+			break;
 		}
 		return _ProcessMessage(this, a_message);
 	}

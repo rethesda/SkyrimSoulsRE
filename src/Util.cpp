@@ -161,4 +161,21 @@ namespace SkyrimSoulsRE::Util
 		RE::TESObjectREFR::LookupByHandle(a_handle, refptr);
 		return refptr.get();
 	}
+
+	void ReleaseSkyUISearchWidgetTextInput(RE::GFxValue& a_root)
+	{
+		RE::GFxValue inventoryLists;
+		if (!a_root.GetMember("inventoryLists", &inventoryLists) || !inventoryLists.IsObject())
+		{
+			return;
+		}
+
+		RE::GFxValue searchWidget;
+		if (!inventoryLists.GetMember("searchWidget", &searchWidget) || !searchWidget.IsObject())
+		{
+			return;
+		}
+
+		searchWidget.Invoke("endInput", nullptr, nullptr, 0);
+	}
 }

@@ -1,4 +1,5 @@
 #include "Menus/BarterMenuEx.h"
+#include "Util.h"
 
 namespace SkyrimSoulsRE
 {
@@ -17,6 +18,10 @@ namespace SkyrimSoulsRE
 
 		case RE::UI_MESSAGE_TYPE::kUpdate:
 			autoCloseManager->CheckAutoClose(RE::BarterMenu::MENU_NAME);
+			break;
+
+		case RE::UI_MESSAGE_TYPE::kHide:
+			Util::ReleaseSkyUISearchWidgetTextInput(this->root);
 			break;
 		}
 
