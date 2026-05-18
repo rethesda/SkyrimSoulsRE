@@ -32,6 +32,7 @@ set(SOURCES
 	include/Menus/TrainingMenuEx.h
 	include/Menus/TutorialMenuEx.h
 	include/Menus/TweenMenuEx.h
+	include/Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h
 	include/Offsets.h
 	include/PCH.h
 	include/PapyrusHook.h
@@ -70,6 +71,7 @@ set(SOURCES
 	src/Menus/TrainingMenuEx.cpp
 	src/Menus/TutorialMenuEx.cpp
 	src/Menus/TweenMenuEx.cpp
+	src/Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.cpp
 	src/PapyrusHook.cpp
 	src/Settings.cpp
 	src/SkyrimSoulsRE.cpp

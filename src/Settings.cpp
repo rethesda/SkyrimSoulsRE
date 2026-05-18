@@ -1,6 +1,8 @@
 #include "Settings.h"
 #include "Util.h"
 
+#include "Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h"
+
 #include <SimpleIni.h>
 
 namespace SkyrimSoulsRE
@@ -42,6 +44,7 @@ namespace SkyrimSoulsRE
 		settings->unpausedMenus[RE::TutorialMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bTutorialMenu", true);
 		settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bTweenMenu", true);
 		settings->unpausedMenus["CustomMenu"] = ini.GetBoolValue("UNPAUSED_MENUS", "bCustomMenu", true);
+		settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", true);
 
 		ini.SetBoolValue("UNPAUSED_MENUS", "bBarterMenu", settings->unpausedMenus[RE::BarterMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("UNPAUSED_MENUS", "bBookMenu", settings->unpausedMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
@@ -63,6 +66,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("UNPAUSED_MENUS", "bTutorialMenu", settings->unpausedMenus[RE::TutorialMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("UNPAUSED_MENUS", "bTweenMenu", settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("UNPAUSED_MENUS", "bCustomMenu", settings->unpausedMenus["CustomMenu"], nullptr, true);
+		ini.SetBoolValue("UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
 
 		//Auto-close
 		settings->autoCloseMenus = ini.GetBoolValue("AUTOCLOSE", "bAutoCloseMenus", true);
@@ -86,6 +90,7 @@ namespace SkyrimSoulsRE
 		settings->updateJournalMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateJournalMenuBottomBar", true);
 		settings->updateMapMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateMapMenuBottomBar", true);
 		settings->updateSleepWaitMenuClock = ini.GetBoolValue("DATA_UPDATES", "bUpdateSleepWaitMenuClock", true);
+		settings->updateQuestJournalOverhaulQuestMenuPlayerInfo = ini.GetBoolValue("DATA_UPDATES", "bUpdateQuestJournalOverhaulQuestMenuPlayerInfo", true);
 
 		ini.SetLongValue("DATA_UPDATES", "iBottomBarMeterUpdateSteps", settings->bottomBarMeterUpdateSteps, "#  Actor value meter update divisor for the bottom bar. The bar updates only when the value crosses 1/divisor of the maximum. 0 updates on any change.", false, true);
 		ini.SetBoolValue("DATA_UPDATES", "bUpdateInventoryMenuBottomBar", settings->updateInventoryMenuBottomBar, nullptr, true);
@@ -99,6 +104,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("DATA_UPDATES", "bUpdateJournalMenuBottomBar", settings->updateJournalMenuBottomBar, nullptr, true);
 		ini.SetBoolValue("DATA_UPDATES", "bUpdateMapMenuBottomBar", settings->updateMapMenuBottomBar, nullptr, true);
 		ini.SetBoolValue("DATA_UPDATES", "bUpdateSleepWaitMenuClock", settings->updateSleepWaitMenuClock, nullptr, true);
+		ini.SetBoolValue("DATA_UPDATES", "bUpdateQuestJournalOverhaulQuestMenuPlayerInfo", settings->updateQuestJournalOverhaulQuestMenuPlayerInfo, nullptr, true);
 
 		//Controls
 		settings->enableMovementInMenus = ini.GetBoolValue("CONTROLS", "bEnableMovementInMenus", true);
@@ -143,6 +149,7 @@ namespace SkyrimSoulsRE
 		settings->slowMotionMenus[RE::TutorialMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_TutorialMenu", false);
 		settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_TweenMenu", false);
 		settings->slowMotionMenus["CustomMenu"] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_CustomMenu", false);
+		settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", false);
 
 		ini.SetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", settings->slowMotionMultiplier, "# This is the multiplier that will affect the game speed when a menu is open.\n# 1.0 is no slowdown, 0.5 is half the speed, etc.\n# Too low values can result in dropped items floating in space.", true);
 		ini.SetBoolValue("SLOWMOTION", "bSlowMotionCombatOnly", settings->slowMotionCombatOnly, "# If enabled, slow-motion will only be applied when the player is in combat.", true);
@@ -166,6 +173,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_TutorialMenu", settings->slowMotionMenus[RE::TutorialMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_TweenMenu", settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_CustomMenu", settings->slowMotionMenus["CustomMenu"], nullptr, true);
+		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
 
 		ini.SetValue("COMBAT_ALERT_OVERLAY", nullptr, nullptr, "# Shows a blinking red overlay when your character is in combat. Especially useful in full screen menus. You can enable or disable it individually for each menu.");
 
@@ -190,6 +198,7 @@ namespace SkyrimSoulsRE
 		settings->overlayMenus[RE::TutorialMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TutorialMenu", true);
 		settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", true);
 		settings->overlayMenus["CustomMenu"] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", true);
+		settings->overlayMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", true);
 
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BarterMenu", settings->overlayMenus[RE::BarterMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BookMenu", settings->overlayMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
@@ -211,6 +220,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TutorialMenu", settings->overlayMenus[RE::TutorialMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", settings->overlayMenus["CustomMenu"], nullptr, true);
+		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", settings->overlayMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
 
 		//HUD
 		settings->disableHUDModifications = ini.GetBoolValue("HUD", "bDisableHUDModifications", false);

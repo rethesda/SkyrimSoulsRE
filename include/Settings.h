@@ -28,6 +28,7 @@ namespace SkyrimSoulsRE
 		bool updateJournalMenuBottomBar;
 		bool updateMapMenuBottomBar;
 		bool updateSleepWaitMenuClock;
+		bool updateQuestJournalOverhaulQuestMenuPlayerInfo;
 
 		//Controls
 		bool enableMovementInMenus;

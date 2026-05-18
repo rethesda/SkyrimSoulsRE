@@ -24,6 +24,8 @@
 #include "Menus/TutorialMenuEx.h"
 #include "Menus/TweenMenuEx.h"
 
+#include "Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h"
+
 #include "Controls/BSWin32KeyboardDeviceEx.h"
 #include "Controls/CameraMovement.h"
 #include "Controls/InputHandlerEx.h"
@@ -58,7 +60,7 @@ namespace SkyrimSoulsRE
 		CheckCursorPosition();
 
 		bool isConsole = a_menuName == RE::Console::MENU_NAME;
-		bool isUnpaused = settings->unpausedMenus[a_menuName.data()];
+		bool isUnpaused = settings->unpausedMenus.find(a_menuName.data()) != settings->unpausedMenus.end() && settings->unpausedMenus[a_menuName.data()];
 		bool usesOverlay = isConsole ? false : settings->overlayMenus[a_menuName.data()];
 
 		if (menu->PausesGame())
@@ -204,6 +206,12 @@ namespace SkyrimSoulsRE
 		ui->menuMap.find("CustomMenu")->second.create = CustomMenuEx::Creator;
 
 		ui->Register(CombatAlertOverlayMenu::MENU_NAME, CombatAlertOverlayMenu::Creator);
+
+		if (auto it = ui->menuMap.find(QuestMenuEx::MENU_NAME); it != ui->menuMap.end())
+		{
+			menuCreatorMap.emplace(QuestMenuEx::MENU_NAME, it->second.create);
+			it->second.create = QuestMenuEx::Creator;
+		}
 	}
 
 	void InstallHooks()
