@@ -39,14 +39,23 @@ namespace SkyrimSoulsRE
 
 	std::map<std::string, RE::UI::Create_t*> menuCreatorMap;
 
-	// Make sure that the menu can't open with the cursor right at the edge of the screen.
-	// If the cursor is there, bump it inside by 10 pixels
-	// Otherwise, the camera can move unexpectedly.
-	static void CheckCursorPosition()
+	static void ResetMenuInput()
 	{
+		// Make sure that the menu can't open with the cursor right at the edge of the screen.
+		// If the cursor is there, bump it inside by 10 pixels
+		// Otherwise, the camera can move unexpectedly.
 		RE::MenuCursor* menuCursor = RE::MenuCursor::GetSingleton();
 		menuCursor->cursorPosX = std::clamp(menuCursor->cursorPosX, 10.0f, menuCursor->screenWidthX - 10.0f);
 		menuCursor->cursorPosY = std::clamp(menuCursor->cursorPosY, 10.0f, menuCursor->screenWidthY - 10.0f);
+
+		// If a direction key is held when the menu opens, DirectionHandler::nextRepeat may already be exceeded, causing immediate navigation.
+		// Reset it so the held key cannot fire until released and pressed again.
+		RE::DirectionHandler* directionHandler = RE::MenuControls::GetSingleton()->directionHandler;
+		if (directionHandler)
+		{
+			directionHandler->nextRepeat = std::numeric_limits<float>::max();
+			directionHandler->currentRepeatCount = 0;
+		}
 	}
 
 	RE::IMenu* CreateMenu(std::string_view a_menuName)
@@ -58,7 +67,7 @@ namespace SkyrimSoulsRE
 
 		RE::IMenu* menu = menuCreatorMap.find(a_menuName.data())->second();
 
-		CheckCursorPosition();
+		ResetMenuInput();
 
 		bool isConsole = a_menuName == RE::Console::MENU_NAME;
 		bool isUnpaused = settings->unpausedMenus.find(a_menuName.data()) != settings->unpausedMenus.end() && settings->unpausedMenus[a_menuName.data()];
