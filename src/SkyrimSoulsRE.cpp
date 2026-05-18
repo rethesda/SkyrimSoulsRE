@@ -24,6 +24,7 @@
 #include "Menus/TutorialMenuEx.h"
 #include "Menus/TweenMenuEx.h"
 
+#include "Menus/ModMenus/DragonbornsBestiary/BestiaryMenuEx.h"
 #include "Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h"
 
 #include "Controls/BSWin32KeyboardDeviceEx.h"
@@ -211,6 +212,12 @@ namespace SkyrimSoulsRE
 		{
 			menuCreatorMap.emplace(QuestMenuEx::MENU_NAME, it->second.create);
 			it->second.create = QuestMenuEx::Creator;
+		}
+
+		if (auto it = ui->menuMap.find(BestiaryMenuEx::MENU_NAME); it != ui->menuMap.end())
+		{
+			menuCreatorMap.emplace(BestiaryMenuEx::MENU_NAME, it->second.create);
+			it->second.create = BestiaryMenuEx::Creator;
 		}
 	}
 

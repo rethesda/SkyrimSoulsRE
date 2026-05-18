@@ -32,6 +32,7 @@ set(SOURCES
 	include/Menus/TrainingMenuEx.h
 	include/Menus/TutorialMenuEx.h
 	include/Menus/TweenMenuEx.h
+	include/Menus/ModMenus/DragonbornsBestiary/BestiaryMenuEx.h
 	include/Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h
 	include/Offsets.h
 	include/PCH.h
@@ -71,6 +72,7 @@ set(SOURCES
 	src/Menus/TrainingMenuEx.cpp
 	src/Menus/TutorialMenuEx.cpp
 	src/Menus/TweenMenuEx.cpp
+	src/Menus/ModMenus/DragonbornsBestiary/BestiaryMenuEx.cpp
 	src/Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.cpp
 	src/PapyrusHook.cpp
 	src/Settings.cpp

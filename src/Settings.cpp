@@ -1,6 +1,7 @@
 #include "Settings.h"
 #include "Util.h"
 
+#include "Menus/ModMenus/DragonbornsBestiary/BestiaryMenuEx.h"
 #include "Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h"
 
 #include <SimpleIni.h>
@@ -45,6 +46,7 @@ namespace SkyrimSoulsRE
 		settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bTweenMenu", true);
 		settings->unpausedMenus["CustomMenu"] = ini.GetBoolValue("UNPAUSED_MENUS", "bCustomMenu", true);
 		settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", true);
+		settings->unpausedMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bDragonbornsBestiary_BestiaryMenu", true);
 
 		ini.SetBoolValue("UNPAUSED_MENUS", "bBarterMenu", settings->unpausedMenus[RE::BarterMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("UNPAUSED_MENUS", "bBookMenu", settings->unpausedMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
@@ -67,6 +69,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("UNPAUSED_MENUS", "bTweenMenu", settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("UNPAUSED_MENUS", "bCustomMenu", settings->unpausedMenus["CustomMenu"], nullptr, true);
 		ini.SetBoolValue("UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
+		ini.SetBoolValue("UNPAUSED_MENUS", "bDragonbornsBestiary_BestiaryMenu", settings->unpausedMenus[BestiaryMenuEx::MENU_NAME.data()], nullptr, true);
 
 		//Auto-close
 		settings->autoCloseMenus = ini.GetBoolValue("AUTOCLOSE", "bAutoCloseMenus", true);
@@ -150,6 +153,7 @@ namespace SkyrimSoulsRE
 		settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_TweenMenu", false);
 		settings->slowMotionMenus["CustomMenu"] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_CustomMenu", false);
 		settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", false);
+		settings->slowMotionMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_DragonbornsBestiary_BestiaryMenu", false);
 
 		ini.SetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", settings->slowMotionMultiplier, "# This is the multiplier that will affect the game speed when a menu is open.\n# 1.0 is no slowdown, 0.5 is half the speed, etc.\n# Too low values can result in dropped items floating in space.", true);
 		ini.SetBoolValue("SLOWMOTION", "bSlowMotionCombatOnly", settings->slowMotionCombatOnly, "# If enabled, slow-motion will only be applied when the player is in combat.", true);
@@ -174,6 +178,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_TweenMenu", settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_CustomMenu", settings->slowMotionMenus["CustomMenu"], nullptr, true);
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
+		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_DragonbornsBestiary_BestiaryMenu", settings->slowMotionMenus[BestiaryMenuEx::MENU_NAME.data()], nullptr, true);
 
 		ini.SetValue("COMBAT_ALERT_OVERLAY", nullptr, nullptr, "# Shows a blinking red overlay when your character is in combat. Especially useful in full screen menus. You can enable or disable it individually for each menu.");
 
@@ -199,6 +204,7 @@ namespace SkyrimSoulsRE
 		settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", true);
 		settings->overlayMenus["CustomMenu"] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", true);
 		settings->overlayMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", true);
+		settings->overlayMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_DragonbornsBestiary_BestiaryMenu", true);
 
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BarterMenu", settings->overlayMenus[RE::BarterMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BookMenu", settings->overlayMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
@@ -221,6 +227,7 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", settings->overlayMenus["CustomMenu"], nullptr, true);
 		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", settings->overlayMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
+		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_DragonbornsBestiary_BestiaryMenu", settings->overlayMenus[BestiaryMenuEx::MENU_NAME.data()], nullptr, true);
 
 		//HUD
 		settings->disableHUDModifications = ini.GetBoolValue("HUD", "bDisableHUDModifications", false);
