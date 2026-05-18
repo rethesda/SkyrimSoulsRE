@@ -59,9 +59,10 @@ namespace Offsets
 
 	namespace Main
 	{
-		static constexpr REL::ID Update(static_cast<std::uint64_t>(36564));  // + 0xADF
-		static constexpr REL::ID UpdatePlayer(static_cast<std::uint64_t>(36581));             // + 0x7A
-		static constexpr REL::ID Render(static_cast<std::uint64_t>(36555));  // + 0x5CA
+		static constexpr REL::ID Update(static_cast<std::uint64_t>(36564));        // + 0xADF
+		static constexpr REL::ID UpdatePlayer(static_cast<std::uint64_t>(36581));  // + 0x7A
+		static constexpr REL::ID Render(static_cast<std::uint64_t>(36555));        // + 0x5CA
+		static constexpr REL::ID InitData(static_cast<std::uint64_t>(36553));
 	}
 
 	namespace Menus
@@ -160,7 +161,6 @@ namespace Offsets
 		static constexpr REL::ID UpdatePartial(static_cast<std::uint64_t>(26230));
 		static constexpr REL::ID UpdateSunGlareLensFlare(static_cast<std::uint64_t>(26246));
 	}
-
 
 	namespace TESFurniture
 	{
