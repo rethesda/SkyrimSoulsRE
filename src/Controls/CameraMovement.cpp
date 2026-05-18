@@ -3,7 +3,7 @@
 
 namespace SkyrimSoulsRE::CameraMovement
 {
-	bool CameraMove_Hook(bool a_result)
+	static bool CameraMove_Hook(bool a_result)
 	{
 		Settings* settings = Settings::GetSingleton();
 		RE::UI* ui = RE::UI::GetSingleton();

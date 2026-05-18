@@ -51,7 +51,7 @@ namespace SkyrimSoulsRE::ItemMenuUpdater
 		return targetRef;
 	}
 
-	void RequestItemListUpdate(RE::TESObjectREFR* a_ref, RE::TESForm* a_unk)
+	static void RequestItemListUpdate(RE::TESObjectREFR* a_ref, RE::TESForm* a_unk)
 	{
 		using func_t = decltype(&RequestItemListUpdate);
 		REL::Relocation<func_t> func(Offsets::ItemMenuUpdater::RequestItemListUpdate);
@@ -59,7 +59,7 @@ namespace SkyrimSoulsRE::ItemMenuUpdater
 	}
 
 	// Update after RemoveAllItems
-	void RemoveAllItems_Hook(RE::BSExtraData* a_unk1, std::uint32_t a_unk2, void* a_unk3, RE::TESObjectREFR* a_containerRef, std::uint64_t a_unk5, std::uint32_t a_unk6, void* a_unk7, void* a_unk8)
+	static void RemoveAllItems_Hook(RE::BSExtraData* a_unk1, std::uint32_t a_unk2, void* a_unk3, RE::TESObjectREFR* a_containerRef, std::uint64_t a_unk5, std::uint32_t a_unk6, void* a_unk7, void* a_unk8)
 	{
 		using func_t = decltype(&RemoveAllItems_Hook);
 		REL::Relocation<func_t> func(Offsets::ItemMenuUpdater::RemoveAllItems);
@@ -77,7 +77,7 @@ namespace SkyrimSoulsRE::ItemMenuUpdater
 		}
 	}
 
-	void ResetInventory_TESObjectREFR_Hook(RE::TESObjectREFR* a_containerRef)
+	static void ResetInventory_TESObjectREFR_Hook(RE::TESObjectREFR* a_containerRef)
 	{
 		RequestItemListUpdate(a_containerRef, nullptr);
 	}

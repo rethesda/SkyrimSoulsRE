@@ -42,7 +42,7 @@ namespace SkyrimSoulsRE
 	// Make sure that the menu can't open with the cursor right at the edge of the screen.
 	// If the cursor is there, bump it inside by 10 pixels
 	// Otherwise, the camera can move unexpectedly.
-	void CheckCursorPosition()
+	static void CheckCursorPosition()
 	{
 		RE::MenuCursor* menuCursor = RE::MenuCursor::GetSingleton();
 		menuCursor->cursorPosX = std::clamp(menuCursor->cursorPosX, 10.0f, menuCursor->screenWidthX - 10.0f);

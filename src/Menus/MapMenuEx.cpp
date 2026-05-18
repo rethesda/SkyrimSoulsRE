@@ -9,7 +9,7 @@ namespace SkyrimSoulsRE
 {
 	namespace MapMenuAudioHooks
 	{
-		void QuaternionToMatrix(RE::NiPoint3& a_v1, RE::NiPoint3& a_v2, RE::NiQuaternion& a_quaternion)
+		static void QuaternionToMatrix(RE::NiPoint3& a_v1, RE::NiPoint3& a_v2, RE::NiQuaternion& a_quaternion)
 		{
 			// https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToMatrix/index.htm
 			// ( - | v1.x | v2.x )
@@ -25,7 +25,7 @@ namespace SkyrimSoulsRE
 			a_v2.z = 1 - 2 * a_quaternion.x * a_quaternion.x - 2 * a_quaternion.y * a_quaternion.y;
 		}
 
-		void SetListenerPosition_Hook(RE::BSAudioManager* a_audioManager, RE::NiPoint3* a_pos)
+		static void SetListenerPosition_Hook(RE::BSAudioManager* a_audioManager, RE::NiPoint3* a_pos)
 		{
 			RE::UI* ui = RE::UI::GetSingleton();
 			if (ui->IsMenuOpen(RE::MapMenu::MENU_NAME))
@@ -40,7 +40,7 @@ namespace SkyrimSoulsRE
 			return func(a_audioManager, a_pos);
 		}
 
-		void SetListenerRotation_Hook(RE::BSAudioManager* a_audioManager, RE::NiPoint3* a_unk1, RE::NiPoint3* a_unk2)
+		static void SetListenerRotation_Hook(RE::BSAudioManager* a_audioManager, RE::NiPoint3* a_unk1, RE::NiPoint3* a_unk2)
 		{
 			RE::UI* ui = RE::UI::GetSingleton();
 			if (ui->IsMenuOpen(RE::MapMenu::MENU_NAME))

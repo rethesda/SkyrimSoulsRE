@@ -100,7 +100,7 @@ namespace SkyrimSoulsRE
 		return menu;
 	}
 
-	void OpenStatsMenuAfterSleep_Hook(RE::UIMessageQueue* a_queue, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data)
+	void StatsMenuEx::OpenStatsMenuAfterSleep_Hook(RE::UIMessageQueue* a_queue, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data)
 	{
 		RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
 		if (player->playerFlags.sleeping)

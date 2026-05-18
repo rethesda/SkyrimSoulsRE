@@ -12,7 +12,7 @@ namespace SkyrimSoulsRE
 		float maxMagicka = -1.0f;
 		float maxStamina = -1.0f;
 
-		RE::PlayerCharacter::PlayerSkills::Data playerData;
+		RE::PlayerCharacter::PlayerSkills::Data playerData = {};
 	};
 
 	// menuDepth = 3
@@ -29,6 +29,8 @@ namespace SkyrimSoulsRE
 
 		static RE::IMenu* Creator();
 		static void InstallHook();
+
+		static void OpenStatsMenuAfterSleep_Hook(RE::UIMessageQueue* a_queue, const RE::BSFixedString& a_menuName, RE::UI_MESSAGE_TYPE a_type, RE::IUIMessageData* a_data);
 
 		static inline bool isSleeping = false;
 

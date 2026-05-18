@@ -82,11 +82,11 @@ namespace SkyrimSoulsRE
 							//Allow category change with configurable buttons when using controllers
 							if (idEvent->device == RE::INPUT_DEVICE::kGamepad)
 							{
-								if (idEvent->idCode == Util::KeycodeToGamepadMask(settings->favoritesTabLeft))
+								if (static_cast<std::int32_t>(idEvent->idCode) == Util::KeycodeToGamepadMask(settings->favoritesTabLeft))
 								{
 									idEvent->userEvent = userEvents->left;
 								}
-								if (idEvent->idCode == Util::KeycodeToGamepadMask(settings->favoritesTabRight))
+								if (static_cast<std::int32_t>(idEvent->idCode) == Util::KeycodeToGamepadMask(settings->favoritesTabRight))
 								{
 									idEvent->userEvent = userEvents->right;
 								}
