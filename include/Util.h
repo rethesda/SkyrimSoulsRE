@@ -2,6 +2,8 @@
 
 namespace SkyrimSoulsRE::Util
 {
+	std::int32_t GamepadMaskToKeycode(std::int32_t a_keyMask);
+	std::int32_t KeycodeToGamepadMask(std::int32_t a_keycode);
 	std::string GetRefDebugString(const RE::TESObjectREFR* a_form);
 	std::wstring TranslateUIString(RE::GFxMovieView* a_view, const std::wstring& a_key);
 	std::string TranslateSkyUIString(RE::GFxMovieView* a_view, const std::string& a_key);

@@ -1,5 +1,6 @@
 #include "Controls/MenuControlsEx.h"
 #include "Controls/InputHandlerEx.h"
+#include "Util.h"
 
 namespace SkyrimSoulsRE
 {
@@ -29,13 +30,10 @@ namespace SkyrimSoulsRE
 		RE::UserEvents* userEvents = RE::UserEvents::GetSingleton();
 		Settings* settings = Settings::GetSingleton();
 
-		bool dialogueMode = ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) && !settings->isUsingDME;
-		bool lookControlsEnabled;
-		bool movementControlsEnabled;
-
 		RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
-		lookControlsEnabled = pc->lookHandler->IsInputEventHandlingEnabled() && controlMap->IsLookingControlsEnabled() && !dialogueMode;
-		movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled() && !dialogueMode;
+		bool dialogueMode = ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) && !settings->isUsingDME;
+		bool lookControlsEnabled = pc->lookHandler->IsInputEventHandlingEnabled() && controlMap->IsLookingControlsEnabled() && !dialogueMode;
+		bool movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled() && !dialogueMode;
 
 		if (a_event && *a_event && !this->remapMode && !ui->GameIsPaused() && !IsFullScreenMenuOpen() && GetUnpausedMenuCount())
 		{
@@ -81,14 +79,14 @@ namespace SkyrimSoulsRE
 							{
 								idEvent->idCode = 0;
 							}
-							//Allow category change with LB and RB when using controllers
+							//Allow category change with configurable buttons when using controllers
 							if (idEvent->device == RE::INPUT_DEVICE::kGamepad)
 							{
-								if (idEvent->idCode == 0x100)  //LB
+								if (idEvent->idCode == Util::KeycodeToGamepadMask(settings->favoritesTabLeft))
 								{
 									idEvent->userEvent = userEvents->left;
 								}
-								if (idEvent->idCode == 0x200)  //RB
+								if (idEvent->idCode == Util::KeycodeToGamepadMask(settings->favoritesTabRight))
 								{
 									idEvent->userEvent = userEvents->right;
 								}

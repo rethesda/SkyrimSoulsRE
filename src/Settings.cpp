@@ -1,4 +1,5 @@
 #include "Settings.h"
+#include "Util.h"
 
 #include <SimpleIni.h>
 
@@ -106,6 +107,8 @@ namespace SkyrimSoulsRE
 		settings->enableCursorCameraMove = ini.GetBoolValue("CONTROLS", "bEnableCursorCameraMove", true);
 		settings->cursorCameraVerticalSpeed = static_cast<float>(ini.GetDoubleValue("CONTROLS", "fCursorCameraVerticalSpeed", 0.15));
 		settings->cursorCameraHorizontalSpeed = static_cast<float>(ini.GetDoubleValue("CONTROLS", "fCursorCameraHorizontalSpeed", 0.25));
+		settings->favoritesTabLeft = static_cast<std::uint32_t>(ini.GetLongValue("CONTROLS", "iFavoritesTabLeft", Util::GamepadMaskToKeycode(RE::BSWin32GamepadDevice::Key::kLeftShoulder)));     // 274
+		settings->favoritesTabRight = static_cast<std::uint32_t>(ini.GetLongValue("CONTROLS", "iFavoritesTabRight", Util::GamepadMaskToKeycode(RE::BSWin32GamepadDevice::Key::kRightShoulder)));  // 275
 
 		ini.SetBoolValue("CONTROLS", "bEnableMovementInMenus", settings->enableMovementInMenus, "# If enabled, you will be able to move when a menu is open. Use the mouse (or the D-pad on controllers) to navigate the menus.\n#  (For controllers users) To change tabs in SkyUI favorites menu, use LB and RB buttons.", true);
 		ini.SetBoolValue("CONTROLS", "bEnableToggleRun", settings->enableToggleRun, "# Allows \"Toggle walk/run\" control to be available when in menus (Caps Lock by default).", true);
@@ -113,6 +116,8 @@ namespace SkyrimSoulsRE
 		ini.SetBoolValue("CONTROLS", "bEnableCursorCameraMove", settings->enableCursorCameraMove, "# If enabled, you will be able to move the camera with the mouse by moving it to the edge of the screen (similar to how it works in the dialogue menu).", true);
 		ini.SetDoubleValue("CONTROLS", "fCursorCameraVerticalSpeed", settings->cursorCameraVerticalSpeed, "# The vertical and horizontal speed the camera moves when bEnableCursorCameraMove is enabled.", true);
 		ini.SetDoubleValue("CONTROLS", "fCursorCameraHorizontalSpeed", settings->cursorCameraHorizontalSpeed, nullptr, true);
+		ini.SetLongValue("CONTROLS", "iFavoritesTabLeft", settings->favoritesTabLeft, "# Gamepad button id used to switch to the previous tab in the SkyUI favorites menu. Default is LB (274).", false, true);
+		ini.SetLongValue("CONTROLS", "iFavoritesTabRight", settings->favoritesTabRight, "# Gamepad button id used to switch to the next tab in the SkyUI favorites menu. Default is RB (275).", false, true);
 
 		//Slowmotion
 		settings->slowMotionMultiplier = static_cast<float>(ini.GetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", 0.5));
@@ -230,7 +235,6 @@ namespace SkyrimSoulsRE
 
 		ini.SetBoolValue("MAP_MENU", "bMapMenuAmbientSoundLoop", settings->mapMenuAmbientSoundLoop, "# If enabled, the map menu looping ambient sound will play as normal. By default it is disabled since the game world is unpaused and both would play simultaneously.", true);
 		ini.SetBoolValue("MAP_MENU", "bMapMenuCustomSky", settings->mapMenuCustomSky, "# If enabled, the map menu will use a separate sky/weather state decoupled from the real world weather.\n# This prevents the map from affecting gameplay (e.g. weather changes, precipitation), but it can be invasive.\n# Highly recommended to keep it enabled, but can be disabled if it conflicts with something.", true);
-
 
 		ini.SaveFile(R"(.\Data\SKSE\Plugins\SkyrimSoulsRE.ini)");
 	}

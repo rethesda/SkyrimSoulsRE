@@ -2,6 +2,54 @@
 
 namespace SkyrimSoulsRE::Util
 {
+	namespace
+	{
+		using Key = RE::BSWin32GamepadDevice::Key;
+
+		static constexpr std::pair<std::int32_t, std::int32_t> kGamepadKeycodeTable[] = {
+			{ Key::kUp, 266 },
+			{ Key::kDown, 267 },
+			{ Key::kLeft, 268 },
+			{ Key::kRight, 269 },
+			{ Key::kStart, 270 },
+			{ Key::kBack, 271 },
+			{ Key::kLeftThumb, 272 },
+			{ Key::kRightThumb, 273 },
+			{ Key::kLeftShoulder, 274 },
+			{ Key::kRightShoulder, 275 },
+			{ Key::kA, 276 },
+			{ Key::kB, 277 },
+			{ Key::kX, 278 },
+			{ Key::kY, 279 },
+			{ Key::kLeftTrigger, 280 },
+			{ Key::kRightTrigger, 281 },
+		};
+	}
+
+	std::int32_t GamepadMaskToKeycode(std::int32_t a_keyMask)
+	{
+		for (const std::pair<std::int32_t, std::int32_t>& entry : kGamepadKeycodeTable)
+		{
+			if (entry.first == a_keyMask)
+			{
+				return entry.second;
+			}
+		}
+		return -1;
+	}
+
+	std::int32_t KeycodeToGamepadMask(std::int32_t a_keycode)
+	{
+		for (const std::pair<std::int32_t, std::int32_t>& entry : kGamepadKeycodeTable)
+		{
+			if (entry.second == a_keycode)
+			{
+				return entry.first;
+			}
+		}
+		return -1;
+	}
+
 	std::string GetRefDebugString(const RE::TESObjectREFR* a_form)
 	{
 		if (!a_form)

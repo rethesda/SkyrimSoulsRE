@@ -1,9 +1,5 @@
 #pragma once
 
-#include <map>
-#include <string>
-#include <vector>
-
 namespace SkyrimSoulsRE
 {
 	class Settings
@@ -40,6 +36,8 @@ namespace SkyrimSoulsRE
 		bool enableCursorCameraMove;
 		float cursorCameraVerticalSpeed;
 		float cursorCameraHorizontalSpeed;
+		std::uint32_t favoritesTabLeft;
+		std::uint32_t favoritesTabRight;
 
 		//slow motion
 		std::map<std::string, bool> slowMotionMenus;
