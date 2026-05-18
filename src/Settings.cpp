@@ -129,7 +129,7 @@ namespace SkyrimSoulsRE
 		ini.SetLongValue("CONTROLS", "iFavoritesTabRight", settings->favoritesTabRight, "# Gamepad button id used to switch to the next tab in the SkyUI favorites menu. Default is RB (275).", false, true);
 
 		//Slowmotion
-		settings->slowMotionMultiplier = static_cast<float>(ini.GetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", 0.5));
+		settings->slowMotionMultiplier = static_cast<float>(ini.GetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", 0.3));
 		settings->slowMotionCombatOnly = ini.GetBoolValue("SLOWMOTION", "bSlowMotionCombatOnly", false);
 
 		settings->slowMotionMenus[RE::BarterMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_BarterMenu", false);
@@ -155,7 +155,7 @@ namespace SkyrimSoulsRE
 		settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", false);
 		settings->slowMotionMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_DragonbornsBestiary_BestiaryMenu", false);
 
-		ini.SetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", settings->slowMotionMultiplier, "# This is the multiplier that will affect the game speed when a menu is open.\n# 1.0 is no slowdown, 0.5 is half the speed, etc.\n# Too low values can result in dropped items floating in space.", true);
+		ini.SetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", settings->slowMotionMultiplier, "# This is the multiplier that will affect the game speed when a menu is open.\n# Default is 0.3, which is 30% of the full speed\n# Values lower than 0.25-0.3 can cause physics issues and are not recommended.\n# This feature also doesn't play nice with other sources of slowdowns, as it won't stack properly (like potion effects or the Slow Time shout).", true);
 		ini.SetBoolValue("SLOWMOTION", "bSlowMotionCombatOnly", settings->slowMotionCombatOnly, "# If enabled, slow-motion will only be applied when the player is in combat.", true);
 
 		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_BarterMenu", settings->slowMotionMenus[RE::BarterMenu::MENU_NAME.data()], "#  Enable or disable slow-motion when a menu is open. Configurable on a per-menu basis.", true);
