@@ -70,7 +70,6 @@ set(SOURCES
 	src/Menus/TrainingMenuEx.cpp
 	src/Menus/TutorialMenuEx.cpp
 	src/Menus/TweenMenuEx.cpp
-	src/PCH.cpp
 	src/PapyrusHook.cpp
 	src/Settings.cpp
 	src/SkyrimSoulsRE.cpp

@@ -6,7 +6,40 @@
 
 constexpr auto MESSAGEBOX_WARNING = 0x00001030L;  // MB_OK | MB_ICONWARNING | MB_SYSTEMMODAL
 
-inline constexpr REL::Version RUNTIME_1_6_1170(1, 6, 1170, 0);
+static void CheckEngineFixes(SkyrimSoulsRE::Settings* a_settings)
+{
+	bool engineFixesPresent = REX::W32::GetModuleHandleA("EngineFixes.dll") &&
+		SkyrimSoulsRE::EngineFixesConfig::load_config("Data/SKSE/Plugins/EngineFixes.toml") &&
+		SkyrimSoulsRE::EngineFixesConfig::patchMemoryManager &&
+		SkyrimSoulsRE::EngineFixesConfig::fixGlobalTime;
+
+	if (engineFixesPresent)
+	{
+		SKSE::log::info("SSE Engine Fixes detected.");
+		return;
+	}
+
+	SKSE::log::warn("SSE Engine Fixes not detected, or certain features are not enabled.");
+	SKSE::log::warn("To ensure best functionality, the following Engine Fixes features must be enabled : Memory Manager patch, Global Time Fix");
+	if (!a_settings->hideEngineFixesWarning)
+	{
+		REX::W32::MessageBoxA(nullptr, "SSE Engine Fixes not detected, or certain features are not enabled. This will not prevent Skyrim Souls RE from running, but to ensure best functionality, the following Engine Fixes features must be enabled:\n\n- Memory Manager patch\n- Global Time Fix\n\nThe Memory Manager patch prevents the false save corruption bug that tends to happen with this mod, and the Global Time fix fixes the behaviour of some menus when using the slow-motion feature.\n\nYou can disable this warning in the .ini.", "Skyrim Souls RE - Warning", MESSAGEBOX_WARNING);
+	}
+}
+
+static void CheckDialogueMovementEnabler(SkyrimSoulsRE::Settings* a_settings)
+{
+	if (REX::W32::GetModuleHandleA("DialogueMovementEnabler.dll"))
+	{
+		SKSE::log::info("Dialogue Movement Enabler detected. Enabling compatibility.");
+		a_settings->isUsingDME = true;
+	}
+	else
+	{
+		SKSE::log::info("Dialogue Movement Enabler not detected. Disabling compatibility.");
+		a_settings->isUsingDME = false;
+	}
+}
 
 void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 {
@@ -15,40 +48,8 @@ void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	case SKSE::MessagingInterface::kPostLoad:
 		{
 			SkyrimSoulsRE::Settings* settings = SkyrimSoulsRE::Settings::GetSingleton();
-
-			bool engineFixesPresent = false;
-			if (REX::W32::GetModuleHandleA("EngineFixes.dll"))
-			{
-				if (SkyrimSoulsRE::EngineFixesConfig::load_config("Data/SKSE/Plugins/EngineFixes.toml"))
-				{
-					if (SkyrimSoulsRE::EngineFixesConfig::patchMemoryManager && SkyrimSoulsRE::EngineFixesConfig::fixGlobalTime)
-					{
-						SKSE::log::info("SSE Engine Fixes detected.");
-						engineFixesPresent = true;
-					}
-				}
-			}
-
-			if (!engineFixesPresent)
-			{
-				SKSE::log::warn("SSE Engine Fixes not detected, or certain features are not enabled.");
-				SKSE::log::warn("To ensure best functionality, the following Engine Fixes features must be enabled : Memory Manager patch, Global Time Fix");
-				if (!settings->hideEngineFixesWarning)
-				{
-					REX::W32::MessageBoxA(nullptr, "SSE Engine Fixes not detected, or certain features are not enabled. This will not prevent Skyrim Souls RE from running, but to ensure best functionality, the following Engine Fixes features must be enabled:\n\n- Memory Manager patch\n- Global Time Fix\n\nThe Memory Manager patch prevents the false save corruption bug that tends to happen with this mod, and the Global Time fix fixes the behaviour of some menus when using the slow-motion feature.\n\nYou can disable this warning in the .ini.", "Skyrim Souls RE - Warning", MESSAGEBOX_WARNING);
-				}
-			}
-
-			if (REX::W32::GetModuleHandleA("DialogueMovementEnabler.dll"))
-			{
-				SKSE::log::info("Dialogue Movement Enabler detected. Enabling compatibility.");
-				settings->isUsingDME = true;
-			}
-			else
-			{
-				SKSE::log::info("Dialogue Movement Enabler not detected. Disabling compatibility.");
-				settings->isUsingDME = false;
-			}
+			CheckEngineFixes(settings);
+			CheckDialogueMovementEnabler(settings);
 		}
 		break;
 	case SKSE::MessagingInterface::kDataLoaded:
@@ -87,9 +88,9 @@ extern "C"
 		SKSE::log::info("{} v{} -({})", Version::FORMATTED_NAME, Version::STRING, __TIMESTAMP__);
 
 		SKSE::AllocTrampoline(1 << 9, true);
-		SKSE::Init(a_skse);
+		SKSE::Init(a_skse, false);
 
-		auto messaging = SKSE::GetMessagingInterface();
+		const SKSE::MessagingInterface* messaging = SKSE::GetMessagingInterface();
 		if (messaging->RegisterListener("SKSE", MessageHandler))
 		{
 			SKSE::log::info("Messaging interface registration successful.");

@@ -112,58 +112,33 @@ namespace SkyrimSoulsRE
 		return menu;
 	}
 
-	std::uint32_t GetCombatAlertOverlayCount()
+	static std::uint32_t CountMenusWithFlag(MenuFlagEx a_flag)
 	{
 		RE::UI* ui = RE::UI::GetSingleton();
-
 		std::uint32_t count = 0;
-
 		for (auto& it : ui->menuStack)
 		{
-			RE::IMenu* menu = it.get();
-			if (menu->menuFlags.all(static_cast<MenuFlag>(MenuFlagEx::kUsesCombatAlertOverlay)))
+			if (it->menuFlags.all(static_cast<MenuFlag>(a_flag)))
 			{
 				++count;
 			}
 		}
-
 		return count;
+	}
+
+	std::uint32_t GetCombatAlertOverlayCount()
+	{
+		return CountMenusWithFlag(MenuFlagEx::kUsesCombatAlertOverlay);
 	}
 
 	std::uint32_t GetUnpausedMenuCount()
 	{
-		RE::UI* ui = RE::UI::GetSingleton();
-
-		std::uint32_t count = 0;
-
-		for (auto& it : ui->menuStack)
-		{
-			RE::IMenu* menu = it.get();
-			if (menu->menuFlags.all(static_cast<MenuFlag>(MenuFlagEx::kUnpaused)))
-			{
-				++count;
-			}
-		}
-
-		return count;
+		return CountMenusWithFlag(MenuFlagEx::kUnpaused);
 	}
 
 	std::uint32_t GetSlowMotionCount()
 	{
-		RE::UI* ui = RE::UI::GetSingleton();
-
-		std::uint32_t count = 0;
-
-		for (auto& it : ui->menuStack)
-		{
-			RE::IMenu* menu = it.get();
-			if (menu->menuFlags.all(static_cast<MenuFlag>(MenuFlagEx::kUsesSlowMotion)))
-			{
-				++count;
-			}
-		}
-
-		return count;
+		return CountMenusWithFlag(MenuFlagEx::kUsesSlowMotion);
 	}
 
 	bool IsFullScreenMenuOpen()
@@ -174,7 +149,7 @@ namespace SkyrimSoulsRE
 
 	bool IsInSurvivalMode()
 	{
-		const RE::BGSDefaultObjectManager* dobj = RE::BGSDefaultObjectManager::GetSingleton();
+		static const RE::BGSDefaultObjectManager* dobj = RE::BGSDefaultObjectManager::GetSingleton();
 		const RE::TESGlobal* survival = dobj ? dobj->GetObject<RE::TESGlobal>(RE::DEFAULT_OBJECT::kSurvivalModeEnabled) : nullptr;
 		return survival ? survival->value == 1.0f : false;
 	};
