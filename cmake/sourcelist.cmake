@@ -37,6 +37,7 @@ set(SOURCES
 	include/HookUtils.h
 	include/Offsets.h
 	include/PCH.h
+	include/CombatPauseHandler.h
 	include/PapyrusHook.h
 	include/Settings.h
 	include/SkyrimSoulsRE.h
@@ -44,6 +45,7 @@ set(SOURCES
 	include/UIBlurManagerEx.h
 	include/Util.h
 	src/AutoCloseManager.cpp
+	src/CombatPauseHandler.cpp
 	src/HookUtils.cpp
 	src/Controls/BSWin32KeyboardDeviceEx.cpp
 	src/Controls/CameraMovement.cpp

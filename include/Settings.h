@@ -9,6 +9,7 @@ namespace SkyrimSoulsRE
 
 		//Unpaused Menus
 		std::map<std::string, bool> unpausedMenus;
+		bool pauseDuringCombat;
 
 		//AutoClose
 		bool autoCloseMenus;
