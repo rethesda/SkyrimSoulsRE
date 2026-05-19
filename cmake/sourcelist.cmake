@@ -34,6 +34,7 @@ set(SOURCES
 	include/Menus/TweenMenuEx.h
 	include/Menus/ModMenus/DragonbornsBestiary/BestiaryMenuEx.h
 	include/Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h
+	include/HookUtils.h
 	include/Offsets.h
 	include/PCH.h
 	include/PapyrusHook.h
@@ -43,6 +44,7 @@ set(SOURCES
 	include/UIBlurManagerEx.h
 	include/Util.h
 	src/AutoCloseManager.cpp
+	src/HookUtils.cpp
 	src/Controls/BSWin32KeyboardDeviceEx.cpp
 	src/Controls/CameraMovement.cpp
 	src/Controls/MenuControlsEx.cpp

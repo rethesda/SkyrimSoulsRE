@@ -1,4 +1,5 @@
 #include "PapyrusHook.h"
+#include "HookUtils.h"
 #include "Settings.h"
 
 namespace SkyrimSoulsRE
@@ -17,7 +18,7 @@ namespace SkyrimSoulsRE
 		{
 			isInMenuMode_1 = reinterpret_cast<bool*>(Offsets::Papyrus::IsInMenuMode::Value1.address());
 			isInMenuMode_2 = reinterpret_cast<bool*>(Offsets::Papyrus::IsInMenuMode::Value2.address());
-			SKSE::GetTrampoline().write_branch<5>(Offsets::Papyrus::IsInMenuMode::Hook.address(), IsInMenuMode);
+			HookUtils::WriteBranch<5>(Offsets::Papyrus::IsInMenuMode::Hook.address(), IsInMenuMode);
 		}
 	}
 }

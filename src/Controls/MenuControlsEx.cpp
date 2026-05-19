@@ -1,5 +1,6 @@
 #include "Controls/MenuControlsEx.h"
 #include "Controls/InputHandlerEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 namespace SkyrimSoulsRE
@@ -139,7 +140,7 @@ namespace SkyrimSoulsRE
 	void MenuControlsEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_MenuControls[0]);
-		_ProcessEvent = vTable.write_vfunc(0x1, &MenuControlsEx::ProcessEvent_Hook);
+		_ProcessEvent = HookUtils::WriteVFunc(vTable, 0x1, &MenuControlsEx::ProcessEvent_Hook);
 
 		InputHandlerEx<RE::FavoritesHandler>::InstallHook(REL::Relocation<std::uintptr_t>(RE::VTABLE_FavoritesHandler[0]), 0x1);
 		InputHandlerEx<RE::MenuOpenHandler>::InstallHook(REL::Relocation<std::uintptr_t>(RE::VTABLE_MenuOpenHandler[0]), 0x1);

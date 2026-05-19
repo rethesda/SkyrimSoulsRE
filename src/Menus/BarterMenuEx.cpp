@@ -1,4 +1,5 @@
 #include "Menus/BarterMenuEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 namespace SkyrimSoulsRE
@@ -37,6 +38,6 @@ namespace SkyrimSoulsRE
 	void BarterMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_BarterMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &BarterMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &BarterMenuEx::ProcessMessage_Hook);
 	}
 }

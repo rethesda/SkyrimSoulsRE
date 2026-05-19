@@ -1,4 +1,5 @@
 #include "UIBlurManagerEx.h"
+#include "HookUtils.h"
 #include "Offsets.h"
 #include "Settings.h"
 
@@ -20,6 +21,6 @@ namespace SkyrimSoulsRE
 
 	void UIBlurManagerEx::InstallHook()
 	{
-		SKSE::GetTrampoline().write_branch<5>(Offsets::UIBlurManager::IncrementBlurCount.address(), (std::uintptr_t)IncrementBlurCount_Hook);
+		HookUtils::WriteBranch<5>(Offsets::UIBlurManager::IncrementBlurCount.address(), (std::uintptr_t)IncrementBlurCount_Hook);
 	}
 }

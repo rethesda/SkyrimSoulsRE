@@ -1,4 +1,5 @@
 #include "Menus/StatsMenuEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 #include <xbyak/xbyak.h>
@@ -114,15 +115,13 @@ namespace SkyrimSoulsRE
 	void StatsMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_StatsMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &StatsMenuEx::ProcessMessage_Hook);
-
-		SKSE::Trampoline& trampoline = SKSE::GetTrampoline();
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &StatsMenuEx::ProcessMessage_Hook);
 
 		// Fix level up when sleeping using survival mode
 		// We replace a tail-call jump with a normal call, so the rest of the function can execute as well (this will remove the sleeping flag).
-		REL::safe_write(Offsets::Menus::StatsMenu::OpenStatsMenuAfterSleep_Hook.address() + 0x65, std::uint32_t(0x90909090));
-		REL::safe_write(Offsets::Menus::StatsMenu::OpenStatsMenuAfterSleep_Hook.address() + 0x69, std::uint8_t(0x90));
-		trampoline.write_call<5>(Offsets::Menus::StatsMenu::OpenStatsMenuAfterSleep_Hook.address() + 0x6A, OpenStatsMenuAfterSleep_Hook);
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::OpenStatsMenuAfterSleep_Hook.address() + 0x65, std::uint32_t(0x90909090));
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::OpenStatsMenuAfterSleep_Hook.address() + 0x69, std::uint8_t(0x90));
+		HookUtils::WriteCall<5>(Offsets::Menus::StatsMenu::OpenStatsMenuAfterSleep_Hook.address() + 0x6A, OpenStatsMenuAfterSleep_Hook);
 
 		// Make StatsMenu check our sleeping variable
 		struct SleepCheck_Code : Xbyak::CodeGenerator
@@ -152,13 +151,13 @@ namespace SkyrimSoulsRE
 
 		SleepCheck_Code code{ std::uintptr_t(Offsets::Menus::StatsMenu::ProcessMessage.address() + 0xFC9), std::uintptr_t(Offsets::Menus::StatsMenu::ProcessMessage.address() + 0x102D) };
 		void* codeLoc = SKSE::GetTrampoline().allocate(code);
-		trampoline.write_branch<5>(Offsets::Menus::StatsMenu::ProcessMessage.address() + 0xFC0, codeLoc);
+		HookUtils::WriteBranch<5>(Offsets::Menus::StatsMenu::ProcessMessage.address() + 0xFC0, codeLoc);
 
 		// Prevent setting kFreezeFrameBackground flag
-		REL::safe_write(Offsets::Menus::StatsMenu::ProcessMessage.address() + 0xA10, std::uint32_t(0x90909090));
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::ProcessMessage.address() + 0xA10, std::uint32_t(0x90909090));
 
 		// Fix for controls not working
-		REL::safe_write(Offsets::Menus::StatsMenu::CanProcess.address() + 0x46, std::uint32_t(0x90909090));
-		REL::safe_write(Offsets::Menus::StatsMenu::CanProcess.address() + 0x4A, std::uint16_t(0x9090));
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::CanProcess.address() + 0x46, std::uint32_t(0x90909090));
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::CanProcess.address() + 0x4A, std::uint16_t(0x9090));
 	}
 }

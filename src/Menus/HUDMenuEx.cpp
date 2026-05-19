@@ -1,4 +1,5 @@
 #include "Menus/HUDMenuEx.h"
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -80,9 +81,8 @@ namespace SkyrimSoulsRE
 	void HUDMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_HUDMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &HUDMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &HUDMenuEx::ProcessMessage_Hook);
 
-		SKSE::Trampoline& trampoline = SKSE::GetTrampoline();
-		trampoline.write_call<5>(Offsets::Menus::HUDMenu::ProcessMessage.address() + 0x990, (uintptr_t)SetHudMode_Hook);
+		HookUtils::WriteCall<5>(Offsets::Menus::HUDMenu::ProcessMessage.address() + 0x990, (uintptr_t)SetHudMode_Hook);
 	}
 }

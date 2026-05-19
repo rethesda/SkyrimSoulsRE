@@ -1,4 +1,5 @@
 #include "Menus/TweenMenuEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 namespace SkyrimSoulsRE
@@ -134,10 +135,10 @@ namespace SkyrimSoulsRE
 	void TweenMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_TweenMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &TweenMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &TweenMenuEx::ProcessMessage_Hook);
 
 		//Fix for camera movement
 		std::uint8_t codes[] = { 0x90, 0x90, 0x90, 0x90, 0x90 };
-		REL::safe_write(Offsets::Menus::TweenMenu::ProcessMessage.address() + 0x4F3, codes, sizeof(codes));
+		HookUtils::SafeWrite(Offsets::Menus::TweenMenu::ProcessMessage.address() + 0x4F3, codes, sizeof(codes));
 	}
 }

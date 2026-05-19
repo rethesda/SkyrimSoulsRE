@@ -1,4 +1,5 @@
 #include "Menus/BookMenuEx.h"
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -34,9 +35,9 @@ namespace SkyrimSoulsRE
 	{
 		//Hook AdvanceMovie
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_BookMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &BookMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &BookMenuEx::ProcessMessage_Hook);
 
 		// Fix for book not appearing
-		REL::safe_write(Offsets::Menus::BookMenu::ProcessMessage.address() + 0x76, std::uint16_t(0x9090));
+		HookUtils::SafeWrite(Offsets::Menus::BookMenu::ProcessMessage.address() + 0x76, std::uint16_t(0x9090));
 	}
 }

@@ -1,4 +1,5 @@
 #include "Menus/LockpickingMenuEx.h"
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -34,6 +35,6 @@ namespace SkyrimSoulsRE
 	void LockpickingMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_LockpickingMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &LockpickingMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &LockpickingMenuEx::ProcessMessage_Hook);
 	}
 }

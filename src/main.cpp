@@ -1,6 +1,7 @@
 #include "EngineFixesChecker.h"
 #undef MessageBox
 
+#include "HookUtils.h"
 #include "SkyrimSoulsRE.h"
 #include "Version.h"
 
@@ -8,7 +9,6 @@ constexpr auto MESSAGEBOX_WARNING = 0x00001030L;  // MB_OK | MB_ICONWARNING | MB
 
 namespace
 {
-
 	void CheckEngineFixes(SkyrimSoulsRE::Settings* a_settings)
 	{
 		bool engineFixesPresent = REX::W32::GetModuleHandleA("EngineFixes.dll") &&
@@ -52,6 +52,7 @@ namespace
 
 		SkyrimSoulsRE::InstallMenuHooks();
 		SKSE::log::info("Menu hooks installed.");
+		SkyrimSoulsRE::HookUtils::LogHooks();
 	}
 }
 
@@ -69,8 +70,7 @@ static void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	}
 }
 
-extern "C"
-{
+extern "C" {
 	DLLEXPORT SKSE::PluginVersionData SKSEPlugin_Version = []() {
 		SKSE::PluginVersionData v{};
 		v.PluginVersion(REL::Version{ Version::MAJOR, Version::MINOR, Version::PATCH, 0 });
@@ -93,7 +93,7 @@ extern "C"
 		log->flush_on(spdlog::level::trace);
 
 		spdlog::set_default_logger(std::move(log));
-		spdlog::set_pattern("%g(%#): [%^%l%$] %v", spdlog::pattern_time_type::local);
+		spdlog::set_pattern("%s(%#): [%^%l%$] %v", spdlog::pattern_time_type::local);
 
 		SKSE::log::info("{} v{} -({})", Version::FORMATTED_NAME, Version::STRING, __TIMESTAMP__);
 
@@ -115,7 +115,7 @@ extern "C"
 		SKSE::log::info("Settings loaded.");
 
 		SkyrimSoulsRE::InstallHooks();
-		_PostDataLoaded = reinterpret_cast<decltype(_PostDataLoaded)>(SKSE::GetTrampoline().write_call<5>(Offsets::Main::InitData.address() + 0x421, (std::uintptr_t)PostDataLoaded_Hook));
+		_PostDataLoaded = reinterpret_cast<decltype(_PostDataLoaded)>(SkyrimSoulsRE::HookUtils::WriteCall<5>(Offsets::Main::InitData.address() + 0x421, (std::uintptr_t)PostDataLoaded_Hook));
 
 		SKSE::log::info("Hooks installed.");
 

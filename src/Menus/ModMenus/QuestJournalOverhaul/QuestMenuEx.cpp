@@ -1,4 +1,5 @@
 #include "Menus/ModMenus/QuestJournalOverhaul/QuestMenuEx.h"
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -69,7 +70,7 @@ namespace SkyrimSoulsRE
 		{
 			isHookInstalled = true;
 			REL::Relocation<std::uintptr_t> vTable(*reinterpret_cast<std::uintptr_t*>(menu));
-			_ProcessMessage = vTable.write_vfunc(0x4, &QuestMenuEx::ProcessMessage_Hook);
+			_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &QuestMenuEx::ProcessMessage_Hook);
 		}
 
 		return menu;

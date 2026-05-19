@@ -1,4 +1,5 @@
 #include "Menus/JournalMenuEx.h"
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -76,6 +77,6 @@ namespace SkyrimSoulsRE
 	void JournalMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_JournalMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &JournalMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &JournalMenuEx::ProcessMessage_Hook);
 	}
 };

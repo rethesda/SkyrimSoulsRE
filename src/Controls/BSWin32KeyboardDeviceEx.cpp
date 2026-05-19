@@ -1,4 +1,5 @@
 #include "Controls/BSWin32KeyboardDeviceEx.h"
+#include "HookUtils.h"
 #include "Offsets.h"
 #include <Windows.h>
 
@@ -20,6 +21,6 @@ namespace SkyrimSoulsRE
 
 	void BSWin32KeyboardDeviceEx::InstallHook()
 	{
-		SKSE::GetTrampoline().write_call<6>(Offsets::BSWin32KeyboardDevice::Process.address() + 0x2CB, (std::uintptr_t)ToUnicode_Hook);
+		HookUtils::WriteCall<6>(Offsets::BSWin32KeyboardDevice::Process.address() + 0x2CB, (std::uintptr_t)ToUnicode_Hook);
 	}
 }

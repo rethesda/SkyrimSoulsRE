@@ -1,4 +1,5 @@
 #include "Menus/ContainerMenuEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 namespace SkyrimSoulsRE
@@ -137,6 +138,6 @@ namespace SkyrimSoulsRE
 	void ContainerMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_ContainerMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &ContainerMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &ContainerMenuEx::ProcessMessage_Hook);
 	}
 }

@@ -1,4 +1,5 @@
 #include "ItemMenuUpdater.h"
+#include "HookUtils.h"
 
 #include <xbyak\xbyak.h>
 
@@ -84,8 +85,8 @@ namespace SkyrimSoulsRE::ItemMenuUpdater
 
 	void InstallHook()
 	{
-		SKSE::GetTrampoline().write_call<5>(Offsets::ItemMenuUpdater::RemoveAllItems_Hook1.address() + 0x3A, (std::uintptr_t)RemoveAllItems_Hook);
-		SKSE::GetTrampoline().write_call<5>(Offsets::ItemMenuUpdater::RemoveAllItems_Hook2.address() + 0x55, (std::uintptr_t)RemoveAllItems_Hook);
+		HookUtils::WriteCall<5>(Offsets::ItemMenuUpdater::RemoveAllItems_Hook1.address() + 0x3A, (std::uintptr_t)RemoveAllItems_Hook);
+		HookUtils::WriteCall<5>(Offsets::ItemMenuUpdater::RemoveAllItems_Hook2.address() + 0x55, (std::uintptr_t)RemoveAllItems_Hook);
 
 		struct TESObjectREFR_ResetInventory_Code : Xbyak::CodeGenerator
 		{
@@ -111,6 +112,6 @@ namespace SkyrimSoulsRE::ItemMenuUpdater
 		TESObjectREFR_ResetInventory_Code code{ std::uintptr_t(ResetInventory_TESObjectREFR_Hook) };
 		void* codeLoc = SKSE::GetTrampoline().allocate(code);
 
-		SKSE::GetTrampoline().write_branch<5>(Offsets::ItemMenuUpdater::ResetInventory_TESObjectREFR_Hook.address() + 0x204, codeLoc);
+		HookUtils::WriteBranch<5>(Offsets::ItemMenuUpdater::ResetInventory_TESObjectREFR_Hook.address() + 0x204, codeLoc);
 	}
 }

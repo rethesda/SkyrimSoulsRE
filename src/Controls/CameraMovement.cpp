@@ -1,4 +1,5 @@
 #include "Controls/CameraMovement.h"
+#include "HookUtils.h"
 #include <xbyak\xbyak.h>
 
 namespace SkyrimSoulsRE::CameraMovement
@@ -64,6 +65,6 @@ namespace SkyrimSoulsRE::CameraMovement
 		CameraMove_Code code{ std::uintptr_t(CameraMove_Hook) };
 		void* codeLoc = SKSE::GetTrampoline().allocate(code);
 
-		SKSE::GetTrampoline().write_branch<5>(Offsets::Misc::ScreenEdgeCameraMoveHook.address() + 0x6D8, codeLoc);
+		HookUtils::WriteBranch<5>(Offsets::Misc::ScreenEdgeCameraMoveHook.address() + 0x6D8, codeLoc);
 	}
 }

@@ -1,4 +1,5 @@
 #include "Menus/InventoryMenuEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 namespace SkyrimSoulsRE
@@ -69,6 +70,6 @@ namespace SkyrimSoulsRE
 	void InventoryMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_InventoryMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &InventoryMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &InventoryMenuEx::ProcessMessage_Hook);
 	}
 };

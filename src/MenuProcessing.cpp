@@ -1,4 +1,5 @@
 #include "MenuProcessing.h"
+#include "HookUtils.h"
 #include "Offsets.h"
 #include "SlowMotionHandler.h"
 
@@ -51,9 +52,9 @@ namespace SkyrimSoulsRE::MenuProcessing
 		_ExecuteConsoleCommands = Offsets::Misc::ExecuteConsoleCommands.address();
 
 		// Disable UI job
-		REL::safe_write(Offsets::Job::UI.address() + 0xB, std::uint8_t(0xEB));
+		HookUtils::SafeWrite(Offsets::Job::UI.address() + 0xB, std::uint8_t(0xEB));
 
 		// Hook UI processing
-		SKSE::GetTrampoline().write_call<5>(Offsets::Main::Update.address() + 0xADF, (uintptr_t)MainThread_Hook);
+		HookUtils::WriteCall<5>(Offsets::Main::Update.address() + 0xADF, (uintptr_t)MainThread_Hook);
 	}
 }

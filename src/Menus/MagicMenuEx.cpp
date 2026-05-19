@@ -1,4 +1,5 @@
 #include "Menus/MagicMenuEx.h"
+#include "HookUtils.h"
 #include "Util.h"
 
 namespace SkyrimSoulsRE
@@ -257,13 +258,12 @@ namespace SkyrimSoulsRE
 	void MagicMenuEx::InstallHook()
 	{
 		REL::Relocation<std::uintptr_t> vTable(RE::VTABLE_MagicMenu[0]);
-		_ProcessMessage = vTable.write_vfunc(0x4, &MagicMenuEx::ProcessMessage_Hook);
+		_ProcessMessage = HookUtils::WriteVFunc(vTable, 0x4, &MagicMenuEx::ProcessMessage_Hook);
 
 		REL::Relocation<std::uintptr_t> vTableAddActiveEffectVisitor(RE::VTABLE___MagicMenuAddActiveEffectVisitor[0]);
-		_MagicMenuAddActiveEffectVisitor_Visit = vTableAddActiveEffectVisitor.write_vfunc(0x1, &MagicMenuEx::MagicMenuAddActiveEffectVisitor_Visit_Hook);
+		_MagicMenuAddActiveEffectVisitor_Visit = HookUtils::WriteVFunc(vTableAddActiveEffectVisitor, 0x1, &MagicMenuEx::MagicMenuAddActiveEffectVisitor_Visit_Hook);
 
-		SKSE::Trampoline& trampoline = SKSE::GetTrampoline();
-		trampoline.write_call<5>(Offsets::MagicItemList::Reset.address() + 0x3B, (uintptr_t)MagicItemList_Reset_Hook);
+		HookUtils::WriteCall<5>(Offsets::MagicItemList::Reset.address() + 0x3B, (uintptr_t)MagicItemList_Reset_Hook);
 
 		activeEffectMappings.reserve(128);
 	}
