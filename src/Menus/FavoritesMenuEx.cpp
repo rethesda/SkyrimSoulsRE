@@ -1,4 +1,5 @@
 #include "Menus/FavoritesMenuEx.h"
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -9,5 +10,7 @@ namespace SkyrimSoulsRE
 
 	void FavoritesMenuEx::InstallHook()
 	{
+		//Fix for hotkeys not working
+		HookUtils::SafeWrite(Offsets::Menus::FavoritesMenu::CanProcess.address() + 0x15, std::uint16_t(0x9090));
 	}
 }

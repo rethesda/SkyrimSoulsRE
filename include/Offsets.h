@@ -82,6 +82,11 @@ namespace Offsets
 			static constexpr REL::ID UpdateAutoCloseTimer_Hook(static_cast<std::uint64_t>(37541));  // + 0x6E8
 		}
 
+		namespace FavoritesMenu
+		{
+			static constexpr REL::ID CanProcess(static_cast<std::uint64_t>(51538));
+		}
+
 		namespace HUDMenu
 		{
 			static constexpr REL::ID ProcessMessage(static_cast<std::uint64_t>(51612));  // + 0x990
