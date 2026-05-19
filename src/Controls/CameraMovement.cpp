@@ -12,7 +12,7 @@ namespace SkyrimSoulsRE::CameraMovement
 		RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
 		RE::MenuControls* mc = RE::MenuControls::GetSingleton();
 
-		if (!ui->GameIsPaused() && (!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) || settings->isUsingDME) && settings->enableCursorCameraMove &&
+		if (!ui->GameIsPaused() && (!ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) || settings->isUsingDialogueMovementEnabler) && settings->enableCursorCameraMove &&
 			GetUnpausedMenuCount() && !IsFullScreenMenuOpen() && !mc->remapMode &&
 			pc->lookHandler->IsInputEventHandlingEnabled() && controlMap->IsLookingControlsEnabled())
 		{

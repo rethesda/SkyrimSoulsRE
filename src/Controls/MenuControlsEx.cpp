@@ -32,7 +32,7 @@ namespace SkyrimSoulsRE
 		Settings* settings = Settings::GetSingleton();
 
 		RE::ControlMap* controlMap = RE::ControlMap::GetSingleton();
-		bool dialogueMode = ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) && !settings->isUsingDME;
+		bool dialogueMode = ui->IsMenuOpen(RE::DialogueMenu::MENU_NAME) && !settings->isUsingDialogueMovementEnabler;
 		bool lookControlsEnabled = pc->lookHandler->IsInputEventHandlingEnabled() && controlMap->IsLookingControlsEnabled() && !dialogueMode;
 		bool movementControlsEnabled = pc->movementHandler->IsInputEventHandlingEnabled() && controlMap->IsMovementControlsEnabled() && !dialogueMode;
 

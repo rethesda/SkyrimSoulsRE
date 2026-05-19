@@ -63,8 +63,9 @@ namespace SkyrimSoulsRE
 		bool mapMenuAmbientSoundLoop;
 		bool mapMenuCustomSky;
 
-		// Dialogue Movement Enabler compatibility (internal setting)
-		bool isUsingDME = false;
+		// Internal
+		bool isUsingDialogueMovementEnabler = false;
+		bool isUsingGoToBed = false;
 
 	private:
 		Settings() {};

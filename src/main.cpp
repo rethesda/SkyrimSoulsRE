@@ -30,17 +30,28 @@ namespace
 		}
 	}
 
-	void CheckDialogueMovementEnabler(SkyrimSoulsRE::Settings* a_settings)
+	void CheckModCompatibility(SkyrimSoulsRE::Settings* a_settings)
 	{
 		if (REX::W32::GetModuleHandleA("DialogueMovementEnabler.dll"))
 		{
 			SKSE::log::info("Dialogue Movement Enabler detected. Enabling compatibility.");
-			a_settings->isUsingDME = true;
+			a_settings->isUsingDialogueMovementEnabler = true;
 		}
 		else
 		{
 			SKSE::log::info("Dialogue Movement Enabler not detected. Disabling compatibility.");
-			a_settings->isUsingDME = false;
+			a_settings->isUsingDialogueMovementEnabler = false;
+		}
+
+		if (REX::W32::GetModuleHandleA("gotobed.dll"))
+		{
+			SKSE::log::info("Go To Bed detected. Enabling compatibility.");
+			a_settings->isUsingGoToBed = true;
+		}
+		else
+		{
+			SKSE::log::info("Go To Bed not detected. Disabling compatibility.");
+			a_settings->isUsingGoToBed = false;
 		}
 	}
 
@@ -64,7 +75,7 @@ static void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 		{
 			SkyrimSoulsRE::Settings* settings = SkyrimSoulsRE::Settings::GetSingleton();
 			CheckEngineFixes(settings);
-			CheckDialogueMovementEnabler(settings);
+			CheckModCompatibility(settings);
 		}
 		break;
 	}
