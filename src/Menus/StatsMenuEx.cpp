@@ -159,5 +159,9 @@ namespace SkyrimSoulsRE
 		// Fix for controls not working
 		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::CanProcess.address() + 0x46, std::uint32_t(0x90909090));
 		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::CanProcess.address() + 0x4A, std::uint16_t(0x9090));
+
+		// Prevent muting of certain sounds
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::Ctor.address() + 0x4C0, std::uint8_t(0xEB));
+		HookUtils::SafeWrite(Offsets::Menus::StatsMenu::Dtor.address() + 0x1B3, std::uint8_t(0xEB));
 	}
 }

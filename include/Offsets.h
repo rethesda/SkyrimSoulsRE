@@ -123,6 +123,9 @@ namespace Offsets
 
 		namespace StatsMenu
 		{
+			static constexpr REL::ID Ctor(static_cast<std::uint64_t>(52508));
+			static constexpr REL::ID Dtor(static_cast<std::uint64_t>(52509));
+
 			static constexpr REL::ID ProcessMessage(static_cast<std::uint64_t>(52510));  // + 0xA10; + 0xFC0; + 0xFC9; + 0x102D
 			static constexpr REL::ID CanProcess(static_cast<std::uint64_t>(52518));      // + 0x46; + 0x4A
 
