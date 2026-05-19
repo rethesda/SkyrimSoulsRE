@@ -240,12 +240,16 @@ namespace SkyrimSoulsRE
 
 	RE::UI_MESSAGE_RESULTS MapMenuEx::ProcessMessage_Hook(RE::UIMessage& a_message)
 	{
+		RE::UI* ui = RE::UI::GetSingleton();
+		RE::Sky* sky = RE::Sky::GetSingleton();
+		Settings* settings = Settings::GetSingleton();
+
 		switch (a_message.type.get())
 		{
 		case RE::UI_MESSAGE_TYPE::kShow:
 			mapMenuCellLoadedEventHandler.Register();
 			lastTimeDateString[0] = '\0';
-			if (!mapSky && Settings::GetSingleton()->mapMenuCustomSky)
+			if (!mapSky && settings->mapMenuCustomSky)
 			{
 				mapSky = std::make_unique<MapSky>();
 			}
@@ -253,9 +257,17 @@ namespace SkyrimSoulsRE
 
 		case RE::UI_MESSAGE_TYPE::kHide:
 			mapMenuCellLoadedEventHandler.Unregister();
+			if (mapSky && sky && ui->GameIsPaused())
+			{
+				mapSky->Finish(sky);
+			}
 			break;
 
 		case RE::UI_MESSAGE_TYPE::kUpdate:
+			if (mapSky && sky && ui->GameIsPaused())
+			{
+				mapSky->Apply(sky);
+			}
 			Update();
 			RE::UIMessageQueue::GetSingleton()->AddMessage(RE::HUDMenu::MENU_NAME, RE::UI_MESSAGE_TYPE::kUpdate, nullptr);
 
