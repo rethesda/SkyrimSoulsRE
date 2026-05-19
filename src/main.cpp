@@ -81,7 +81,8 @@ static void MessageHandler(SKSE::MessagingInterface::Message* a_msg)
 	}
 }
 
-extern "C" {
+extern "C"
+{
 	DLLEXPORT SKSE::PluginVersionData SKSEPlugin_Version = []() {
 		SKSE::PluginVersionData v{};
 		v.PluginVersion(REL::Version{ Version::MAJOR, Version::MINOR, Version::PATCH, 0 });
@@ -123,7 +124,6 @@ extern "C" {
 		}
 
 		SkyrimSoulsRE::LoadSettings();
-		SKSE::log::info("Settings loaded.");
 
 		SkyrimSoulsRE::InstallHooks();
 		_PostDataLoaded = reinterpret_cast<decltype(_PostDataLoaded)>(SkyrimSoulsRE::HookUtils::WriteCall<5>(Offsets::Main::InitData.address() + 0x421, (std::uintptr_t)PostDataLoaded_Hook));

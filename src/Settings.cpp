@@ -6,6 +6,39 @@
 
 #include <SimpleIni.h>
 
+namespace
+{
+	void IniSection(CSimpleIniA& a_ini, const char* a_section, const char* a_comment = nullptr)
+	{
+		a_ini.SetValue(a_section, nullptr, nullptr, a_comment);
+		SKSE::log::info("[{}]", a_section);
+	}
+
+	bool IniGetBool(CSimpleIniA& a_ini, const char* a_section, const char* a_key, bool a_default, const char* a_comment = nullptr)
+	{
+		bool val = a_ini.GetBoolValue(a_section, a_key, a_default);
+		a_ini.SetBoolValue(a_section, a_key, val, a_comment, true);
+		SKSE::log::info("  {}: {}", a_key, val);
+		return val;
+	}
+
+	float IniGetFloat(CSimpleIniA& a_ini, const char* a_section, const char* a_key, float a_default, const char* a_comment = nullptr)
+	{
+		float val = static_cast<float>(a_ini.GetDoubleValue(a_section, a_key, a_default));
+		a_ini.SetDoubleValue(a_section, a_key, val, a_comment, true);
+		SKSE::log::info("  {}: {}", a_key, val);
+		return val;
+	}
+
+	std::uint32_t IniGetUInt(CSimpleIniA& a_ini, const char* a_section, const char* a_key, std::uint32_t a_default, const char* a_comment = nullptr)
+	{
+		std::uint32_t val = static_cast<std::uint32_t>(a_ini.GetLongValue(a_section, a_key, a_default));
+		a_ini.SetLongValue(a_section, a_key, val, a_comment, false, true);
+		SKSE::log::info("  {}: {}", a_key, val);
+		return val;
+	}
+}
+
 namespace SkyrimSoulsRE
 {
 	Settings* Settings::GetSingleton()
@@ -18,240 +51,133 @@ namespace SkyrimSoulsRE
 	{
 		Settings* settings = Settings::GetSingleton();
 
+		constexpr const char* iniPath = R"(.\Data\SKSE\Plugins\SkyrimSoulsRE.ini)";
+
 		CSimpleIniA ini;
 		ini.SetUnicode();
-		ini.LoadFile(R"(.\Data\SKSE\Plugins\SkyrimSoulsRE.ini)");
+		ini.LoadFile(iniPath);
 
-		ini.SetValue("UNPAUSED_MENUS", nullptr, nullptr, "# DELETE THIS FILE AND RUN THE GAME IF YOU WANT TO REGENERATE THE DEFAULT SETTINGS\n\n#  Here you can set which menus you want to be paused or unpaused.");
+		SKSE::log::info("Loading settings from: {}", std::filesystem::absolute(iniPath).string());
 
-		//Unpaused menus
-		settings->unpausedMenus[RE::BarterMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bBarterMenu", true);
-		settings->unpausedMenus[RE::BookMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bBookMenu", true);
-		settings->unpausedMenus[RE::Console::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bConsole", true);
-		settings->unpausedMenus[RE::ContainerMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bContainerMenu", true);
-		settings->unpausedMenus[RE::FavoritesMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bFavoritesMenu", true);
-		settings->unpausedMenus[RE::GiftMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bGiftMenu", true);
-		settings->unpausedMenus[RE::InventoryMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bInventoryMenu", true);
-		settings->unpausedMenus[RE::JournalMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bJournalMenu", true);
-		settings->unpausedMenus[RE::LevelUpMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bLevelUpMenu", true);
-		settings->unpausedMenus[RE::LockpickingMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bLockpickingMenu", true);
-		settings->unpausedMenus[RE::MagicMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bMagicMenu", true);
-		settings->unpausedMenus[RE::MapMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bMapMenu", true);
-		settings->unpausedMenus[RE::MessageBoxMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bMessageBoxMenu", true);
-		settings->unpausedMenus[RE::ModManagerMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bModManagerMenu", true);
-		settings->unpausedMenus[RE::SleepWaitMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bSleepWaitMenu", true);
-		settings->unpausedMenus[RE::StatsMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bStatsMenu", true);
-		settings->unpausedMenus[RE::TrainingMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bTrainingMenu", true);
-		settings->unpausedMenus[RE::TutorialMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bTutorialMenu", true);
-		settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bTweenMenu", true);
-		settings->unpausedMenus["CustomMenu"] = ini.GetBoolValue("UNPAUSED_MENUS", "bCustomMenu", true);
-		settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", true);
-		settings->unpausedMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bDragonbornsBestiary_BestiaryMenu", true);
+		IniSection(ini, "UNPAUSED_MENUS", "# DELETE THIS FILE AND RUN THE GAME IF YOU WANT TO REGENERATE THE DEFAULT SETTINGS\n\n#  Here you can set which menus you want to be paused or unpaused.");
+		settings->unpausedMenus[RE::BarterMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bBarterMenu", true);
+		settings->unpausedMenus[RE::BookMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bBookMenu", true);
+		settings->unpausedMenus[RE::Console::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bConsole", true);
+		settings->unpausedMenus[RE::ContainerMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bContainerMenu", true);
+		settings->unpausedMenus[RE::FavoritesMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bFavoritesMenu", true);
+		settings->unpausedMenus[RE::GiftMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bGiftMenu", true);
+		settings->unpausedMenus[RE::InventoryMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bInventoryMenu", true);
+		settings->unpausedMenus[RE::JournalMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bJournalMenu", true);
+		settings->unpausedMenus[RE::LevelUpMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bLevelUpMenu", true);
+		settings->unpausedMenus[RE::LockpickingMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bLockpickingMenu", true);
+		settings->unpausedMenus[RE::MagicMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bMagicMenu", true);
+		settings->unpausedMenus[RE::MapMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bMapMenu", true);
+		settings->unpausedMenus[RE::MessageBoxMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bMessageBoxMenu", true);
+		settings->unpausedMenus[RE::ModManagerMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bModManagerMenu", true);
+		settings->unpausedMenus[RE::SleepWaitMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bSleepWaitMenu", true);
+		settings->unpausedMenus[RE::StatsMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bStatsMenu", true);
+		settings->unpausedMenus[RE::TrainingMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bTrainingMenu", true);
+		settings->unpausedMenus[RE::TutorialMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bTutorialMenu", true);
+		settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bTweenMenu", true);
+		settings->unpausedMenus["CustomMenu"] = IniGetBool(ini, "UNPAUSED_MENUS", "bCustomMenu", true);
+		settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", true);
+		settings->unpausedMenus[BestiaryMenuEx::MENU_NAME.data()] = IniGetBool(ini, "UNPAUSED_MENUS", "bDragonbornsBestiary_BestiaryMenu", true);
 
-		ini.SetBoolValue("UNPAUSED_MENUS", "bBarterMenu", settings->unpausedMenus[RE::BarterMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bBookMenu", settings->unpausedMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bConsole", settings->unpausedMenus[RE::Console::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bContainerMenu", settings->unpausedMenus[RE::ContainerMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bFavoritesMenu", settings->unpausedMenus[RE::FavoritesMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bGiftMenu", settings->unpausedMenus[RE::GiftMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bInventoryMenu", settings->unpausedMenus[RE::InventoryMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bJournalMenu", settings->unpausedMenus[RE::JournalMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bLevelUpMenu", settings->unpausedMenus[RE::LevelUpMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bLockpickingMenu", settings->unpausedMenus[RE::LockpickingMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bMagicMenu", settings->unpausedMenus[RE::MagicMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bMapMenu", settings->unpausedMenus[RE::MapMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bMessageBoxMenu", settings->unpausedMenus[RE::MessageBoxMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bModManagerMenu", settings->unpausedMenus[RE::ModManagerMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bSleepWaitMenu", settings->unpausedMenus[RE::SleepWaitMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bStatsMenu", settings->unpausedMenus[RE::StatsMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bTrainingMenu", settings->unpausedMenus[RE::TrainingMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bTutorialMenu", settings->unpausedMenus[RE::TutorialMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bTweenMenu", settings->unpausedMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bCustomMenu", settings->unpausedMenus["CustomMenu"], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bQuestJournalOverhaul_QuestMenu", settings->unpausedMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("UNPAUSED_MENUS", "bDragonbornsBestiary_BestiaryMenu", settings->unpausedMenus[BestiaryMenuEx::MENU_NAME.data()], nullptr, true);
+		IniSection(ini, "AUTOCLOSE");
+		settings->autoCloseMenus = IniGetBool(ini, "AUTOCLOSE", "bAutoCloseMenus", true, "#  Auto close menus if the distance to the object is larger than the specified value.");
+		settings->autoCloseDistance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseDistance", 400.f, "#  The maximum distance (in in-game units) before the menus will automatically close.\n#  Too small values can cause the menus to close unexpectedly.");
+		settings->autoCloseTolerance = IniGetFloat(ini, "AUTOCLOSE", "fAutoCloseTolerance", 100.f, "#  The maximum distance (in in-game units) where the menus NEVER auto-close (in relation to the players initial position when the menu was opened).\n#  This is used as a failsafe when the initial distance is larger than the maximum allowed to prevent the menu from closing immediately (e.g. a container opened by a script).");
 
-		//Auto-close
-		settings->autoCloseMenus = ini.GetBoolValue("AUTOCLOSE", "bAutoCloseMenus", true);
-		settings->autoCloseDistance = static_cast<float>(ini.GetDoubleValue("AUTOCLOSE", "fAutoCloseDistance", 400.0));
-		settings->autoCloseTolerance = static_cast<float>(ini.GetDoubleValue("AUTOCLOSE", "fAutoCloseTolerance", 100.0));
+		IniSection(ini, "DATA_UPDATES");
+		settings->bottomBarMeterUpdateSteps = IniGetUInt(ini, "DATA_UPDATES", "iBottomBarMeterUpdateSteps", 100, "#  Actor value meter update divisor for the bottom bar. The bar updates only when the value crosses 1/divisor of the maximum. 0 updates on any change.");
+		settings->updateInventoryMenuBottomBar = IniGetBool(ini, "DATA_UPDATES", "bUpdateInventoryMenuBottomBar", true);
+		settings->updateContainerMenuBottomBar = IniGetBool(ini, "DATA_UPDATES", "bUpdateContainerMenuBottomBar", true);
+		settings->updateContainerMenuPickpocketChance = IniGetBool(ini, "DATA_UPDATES", "bUpdateContainerMenuPickpocketChance", true);
+		settings->updateMagicMenuBottomBar = IniGetBool(ini, "DATA_UPDATES", "bUpdateMagicMenuBottomBar", true);
+		settings->updateMagicMenuActiveEffectTimers = IniGetBool(ini, "DATA_UPDATES", "bUpdateMagicMenuActiveEffectTimers", true);
+		settings->updateStatsMenuPlayerInfo = IniGetBool(ini, "DATA_UPDATES", "bUpdateStatsMenuPlayerInfo", true);
+		settings->updateStatsMenuSkillList = IniGetBool(ini, "DATA_UPDATES", "bUpdateStatsMenuSkillList", true);
+		settings->updateTweenMenuBottomBar = IniGetBool(ini, "DATA_UPDATES", "bUpdateTweenMenuBottomBar", true);
+		settings->updateJournalMenuBottomBar = IniGetBool(ini, "DATA_UPDATES", "bUpdateJournalMenuBottomBar", true);
+		settings->updateMapMenuBottomBar = IniGetBool(ini, "DATA_UPDATES", "bUpdateMapMenuBottomBar", true);
+		settings->updateSleepWaitMenuClock = IniGetBool(ini, "DATA_UPDATES", "bUpdateSleepWaitMenuClock", true);
+		settings->updateQuestJournalOverhaulQuestMenuPlayerInfo = IniGetBool(ini, "DATA_UPDATES", "bUpdateQuestJournalOverhaulQuestMenuPlayerInfo", true);
 
-		ini.SetBoolValue("AUTOCLOSE", "bAutoCloseMenus", settings->autoCloseMenus, "#  Auto close menus if the distance to the object is larger than the specified value.", true);
-		ini.SetDoubleValue("AUTOCLOSE", "fAutoCloseDistance", settings->autoCloseDistance, "#  The maximum distance (in in-game units) before the menus will automatically close.\n#  Too small values can cause the menus to close unexpectedly.", true);
-		ini.SetDoubleValue("AUTOCLOSE", "fAutoCloseTolerance", settings->autoCloseTolerance, "#  The maximum distance (in in-game units) where the menus NEVER auto-close (in relation to the players initial position when the menu was opened).\n#  This is used as a failsafe when the initial distance is larger than the maximum allowed to prevent the menu from closing immediately (e.g. a container opened by a script).", true);
+		IniSection(ini, "CONTROLS");
+		settings->enableMovementInMenus = IniGetBool(ini, "CONTROLS", "bEnableMovementInMenus", true, "# If enabled, you will be able to move when a menu is open. Use the mouse (or the D-pad on controllers) to navigate the menus.\n#  (For controllers users) To change tabs in SkyUI favorites menu, use LB and RB buttons.");
+		settings->enableToggleRun = IniGetBool(ini, "CONTROLS", "bEnableToggleRun", false, "# Allows \"Toggle walk/run\" control to be available when in menus (Caps Lock by default).");
+		settings->enableGamepadCameraMove = IniGetBool(ini, "CONTROLS", "bEnableGamepadCameraMove", true, "# If enabled, you will be able to move the camera when using controllers. To rotate items in the inventory, maximize the preview first by pressing on the thumb stick.");
+		settings->enableCursorCameraMove = IniGetBool(ini, "CONTROLS", "bEnableCursorCameraMove", true, "# If enabled, you will be able to move the camera with the mouse by moving it to the edge of the screen (similar to how it works in the dialogue menu).");
+		settings->cursorCameraVerticalSpeed = IniGetFloat(ini, "CONTROLS", "fCursorCameraVerticalSpeed", 0.15f, "# The vertical and horizontal speed the camera moves when bEnableCursorCameraMove is enabled.");
+		settings->cursorCameraHorizontalSpeed = IniGetFloat(ini, "CONTROLS", "fCursorCameraHorizontalSpeed", 0.25f);
+		settings->favoritesTabLeft = IniGetUInt(ini, "CONTROLS", "iFavoritesTabLeft", Util::GamepadMaskToKeycode(RE::BSWin32GamepadDevice::Key::kLeftShoulder), "# Gamepad button id used to switch to the previous tab in the SkyUI favorites menu. Default is LB (274).");
+		settings->favoritesTabRight = IniGetUInt(ini, "CONTROLS", "iFavoritesTabRight", Util::GamepadMaskToKeycode(RE::BSWin32GamepadDevice::Key::kRightShoulder), "# Gamepad button id used to switch to the next tab in the SkyUI favorites menu. Default is RB (275).");
 
-		//Data updates
-		settings->bottomBarMeterUpdateSteps = ini.GetLongValue("DATA_UPDATES", "iBottomBarMeterUpdateSteps", 100);
-		settings->updateInventoryMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateInventoryMenuBottomBar", true);
-		settings->updateContainerMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateContainerMenuBottomBar", true);
-		settings->updateContainerMenuPickpocketChance = ini.GetBoolValue("DATA_UPDATES", "bUpdateContainerMenuPickpocketChance", true);
-		settings->updateMagicMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateMagicMenuBottomBar", true);
-		settings->updateMagicMenuActiveEffectTimers = ini.GetBoolValue("DATA_UPDATES", "bUpdateMagicMenuActiveEffectTimers", true);
-		settings->updateStatsMenuPlayerInfo = ini.GetBoolValue("DATA_UPDATES", "bUpdateStatsMenuPlayerInfo", true);
-		settings->updateStatsMenuSkillList = ini.GetBoolValue("DATA_UPDATES", "bUpdateStatsMenuSkillList", true);
-		settings->updateTweenMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateTweenMenuBottomBar", true);
-		settings->updateJournalMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateJournalMenuBottomBar", true);
-		settings->updateMapMenuBottomBar = ini.GetBoolValue("DATA_UPDATES", "bUpdateMapMenuBottomBar", true);
-		settings->updateSleepWaitMenuClock = ini.GetBoolValue("DATA_UPDATES", "bUpdateSleepWaitMenuClock", true);
-		settings->updateQuestJournalOverhaulQuestMenuPlayerInfo = ini.GetBoolValue("DATA_UPDATES", "bUpdateQuestJournalOverhaulQuestMenuPlayerInfo", true);
+		IniSection(ini, "SLOWMOTION");
+		settings->slowMotionMultiplier = IniGetFloat(ini, "SLOWMOTION", "fSlowMotionMultiplier", 0.3f, "# This is the multiplier that will affect the game speed when a menu is open.\n# Default is 0.3, which is 30% of the full speed\n# Values lower than 0.25-0.3 can cause physics issues and are not recommended.\n# This feature also doesn't play nice with other sources of slowdowns, as it won't stack properly (like potion effects or the Slow Time shout).");
+		settings->slowMotionCombatOnly = IniGetBool(ini, "SLOWMOTION", "bSlowMotionCombatOnly", false, "# If enabled, slow-motion will only be applied when the player is in combat.");
+		settings->slowMotionMenus[RE::BarterMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_BarterMenu", false, "#  Enable or disable slow-motion when a menu is open. Configurable on a per-menu basis.");
+		settings->slowMotionMenus[RE::BookMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_BookMenu", false);
+		settings->slowMotionMenus[RE::ContainerMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_ContainerMenu", false);
+		settings->slowMotionMenus[RE::FavoritesMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_FavoritesMenu", false);
+		settings->slowMotionMenus[RE::GiftMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_GiftMenu", false);
+		settings->slowMotionMenus[RE::InventoryMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_InventoryMenu", false);
+		settings->slowMotionMenus[RE::JournalMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_JournalMenu", false);
+		settings->slowMotionMenus[RE::LevelUpMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_LevelUpMenu", false);
+		settings->slowMotionMenus[RE::LockpickingMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_LockpickingMenu", false);
+		settings->slowMotionMenus[RE::MagicMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_MagicMenu", false);
+		settings->slowMotionMenus[RE::MapMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_MapMenu", false);
+		settings->slowMotionMenus[RE::MessageBoxMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_MessageBoxMenu", false);
+		settings->slowMotionMenus[RE::ModManagerMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_ModManagerMenu", false);
+		settings->slowMotionMenus[RE::SleepWaitMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_SleepWaitMenu", false);
+		settings->slowMotionMenus[RE::StatsMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_StatsMenu", false);
+		settings->slowMotionMenus[RE::TrainingMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_TrainingMenu", false);
+		settings->slowMotionMenus[RE::TutorialMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_TutorialMenu", false);
+		settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_TweenMenu", false);
+		settings->slowMotionMenus["CustomMenu"] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_CustomMenu", false);
+		settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", false);
+		settings->slowMotionMenus[BestiaryMenuEx::MENU_NAME.data()] = IniGetBool(ini, "SLOWMOTION", "bEnableSlowMotion_DragonbornsBestiary_BestiaryMenu", false);
 
-		ini.SetLongValue("DATA_UPDATES", "iBottomBarMeterUpdateSteps", settings->bottomBarMeterUpdateSteps, "#  Actor value meter update divisor for the bottom bar. The bar updates only when the value crosses 1/divisor of the maximum. 0 updates on any change.", false, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateInventoryMenuBottomBar", settings->updateInventoryMenuBottomBar, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateContainerMenuBottomBar", settings->updateContainerMenuBottomBar, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateContainerMenuPickpocketChance", settings->updateContainerMenuPickpocketChance, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateMagicMenuBottomBar", settings->updateMagicMenuBottomBar, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateMagicMenuActiveEffectTimers", settings->updateMagicMenuActiveEffectTimers, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateStatsMenuPlayerInfo", settings->updateStatsMenuPlayerInfo, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateStatsMenuSkillList", settings->updateStatsMenuSkillList, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateTweenMenuBottomBar", settings->updateTweenMenuBottomBar, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateJournalMenuBottomBar", settings->updateJournalMenuBottomBar, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateMapMenuBottomBar", settings->updateMapMenuBottomBar, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateSleepWaitMenuClock", settings->updateSleepWaitMenuClock, nullptr, true);
-		ini.SetBoolValue("DATA_UPDATES", "bUpdateQuestJournalOverhaulQuestMenuPlayerInfo", settings->updateQuestJournalOverhaulQuestMenuPlayerInfo, nullptr, true);
+		IniSection(ini, "COMBAT_ALERT_OVERLAY", "# Shows a blinking red overlay when your character is in combat. Especially useful in full screen menus. You can enable or disable it individually for each menu.");
+		settings->overlayMenus[RE::BarterMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_BarterMenu", true);
+		settings->overlayMenus[RE::BookMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_BookMenu", true);
+		settings->overlayMenus[RE::ContainerMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_ContainerMenu", true);
+		settings->overlayMenus[RE::DialogueMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_DialogueMenu", true);
+		settings->overlayMenus[RE::FavoritesMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_FavoritesMenu", true);
+		settings->overlayMenus[RE::GiftMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_GiftMenu", true);
+		settings->overlayMenus[RE::InventoryMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_InventoryMenu", true);
+		settings->overlayMenus[RE::JournalMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_JournalMenu", true);
+		settings->overlayMenus[RE::LevelUpMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_LevelUpMenu", true);
+		settings->overlayMenus[RE::LockpickingMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_LockpickingMenu", true);
+		settings->overlayMenus[RE::MagicMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_MagicMenu", true);
+		settings->overlayMenus[RE::MapMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_MapMenu", true);
+		settings->overlayMenus[RE::MessageBoxMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_MessageBoxMenu", true);
+		settings->overlayMenus[RE::ModManagerMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_ModManagerMenu", true);
+		settings->overlayMenus[RE::SleepWaitMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_SleepWaitMenu", true);
+		settings->overlayMenus[RE::StatsMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_StatsMenu", true);
+		settings->overlayMenus[RE::TrainingMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_TrainingMenu", true);
+		settings->overlayMenus[RE::TutorialMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_TutorialMenu", true);
+		settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", true);
+		settings->overlayMenus["CustomMenu"] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", true);
+		settings->overlayMenus[QuestMenuEx::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", true);
+		settings->overlayMenus[BestiaryMenuEx::MENU_NAME.data()] = IniGetBool(ini, "COMBAT_ALERT_OVERLAY", "bShowCAO_DragonbornsBestiary_BestiaryMenu", true);
 
-		//Controls
-		settings->enableMovementInMenus = ini.GetBoolValue("CONTROLS", "bEnableMovementInMenus", true);
-		settings->enableToggleRun = ini.GetBoolValue("CONTROLS", "bEnableToggleRun", false);
-		settings->enableGamepadCameraMove = ini.GetBoolValue("CONTROLS", "bEnableGamepadCameraMove", true);
-		settings->enableCursorCameraMove = ini.GetBoolValue("CONTROLS", "bEnableCursorCameraMove", true);
-		settings->cursorCameraVerticalSpeed = static_cast<float>(ini.GetDoubleValue("CONTROLS", "fCursorCameraVerticalSpeed", 0.15));
-		settings->cursorCameraHorizontalSpeed = static_cast<float>(ini.GetDoubleValue("CONTROLS", "fCursorCameraHorizontalSpeed", 0.25));
-		settings->favoritesTabLeft = static_cast<std::uint32_t>(ini.GetLongValue("CONTROLS", "iFavoritesTabLeft", Util::GamepadMaskToKeycode(RE::BSWin32GamepadDevice::Key::kLeftShoulder)));     // 274
-		settings->favoritesTabRight = static_cast<std::uint32_t>(ini.GetLongValue("CONTROLS", "iFavoritesTabRight", Util::GamepadMaskToKeycode(RE::BSWin32GamepadDevice::Key::kRightShoulder)));  // 275
+		IniSection(ini, "HUD");
+		settings->disableHUDModifications = IniGetBool(ini, "HUD", "bDisableHUDModifications", false, "# If set to true, SkyrimSouls will not attempt to modify the location of the sneak meter. Use it if you have a compatibility issue with something");
+		settings->sneakMeterPosX = IniGetFloat(ini, "HUD", "fSneakMeterPosX", 24.f, "# The position where the sneak meter will appear on the screen when a menu is open. It's necessary as some menu elements would hide it otherwise (eg. lockpicking).\n# The values are a bit arbitrary so just try different values until you find what suits you.");
+		settings->sneakMeterPosY = IniGetFloat(ini, "HUD", "fSneakMeterPosY", 120.f);
 
-		ini.SetBoolValue("CONTROLS", "bEnableMovementInMenus", settings->enableMovementInMenus, "# If enabled, you will be able to move when a menu is open. Use the mouse (or the D-pad on controllers) to navigate the menus.\n#  (For controllers users) To change tabs in SkyUI favorites menu, use LB and RB buttons.", true);
-		ini.SetBoolValue("CONTROLS", "bEnableToggleRun", settings->enableToggleRun, "# Allows \"Toggle walk/run\" control to be available when in menus (Caps Lock by default).", true);
-		ini.SetBoolValue("CONTROLS", "bEnableGamepadCameraMove", settings->enableGamepadCameraMove, "# If enabled, you will be able to move the camera when using controllers. To rotate items in the inventory, maximize the preview first by pressing on the thumb stick.", true);
-		ini.SetBoolValue("CONTROLS", "bEnableCursorCameraMove", settings->enableCursorCameraMove, "# If enabled, you will be able to move the camera with the mouse by moving it to the edge of the screen (similar to how it works in the dialogue menu).", true);
-		ini.SetDoubleValue("CONTROLS", "fCursorCameraVerticalSpeed", settings->cursorCameraVerticalSpeed, "# The vertical and horizontal speed the camera moves when bEnableCursorCameraMove is enabled.", true);
-		ini.SetDoubleValue("CONTROLS", "fCursorCameraHorizontalSpeed", settings->cursorCameraHorizontalSpeed, nullptr, true);
-		ini.SetLongValue("CONTROLS", "iFavoritesTabLeft", settings->favoritesTabLeft, "# Gamepad button id used to switch to the previous tab in the SkyUI favorites menu. Default is LB (274).", false, true);
-		ini.SetLongValue("CONTROLS", "iFavoritesTabRight", settings->favoritesTabRight, "# Gamepad button id used to switch to the next tab in the SkyUI favorites menu. Default is RB (275).", false, true);
+		IniSection(ini, "BLUR");
+		settings->disableBlur = IniGetBool(ini, "BLUR", "bDisableBlur", false, "# If this is enabled, background blur will be disabled in menus");
 
-		//Slowmotion
-		settings->slowMotionMultiplier = static_cast<float>(ini.GetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", 0.3));
-		settings->slowMotionCombatOnly = ini.GetBoolValue("SLOWMOTION", "bSlowMotionCombatOnly", false);
+		IniSection(ini, "MESSAGES");
+		settings->hideEngineFixesWarning = IniGetBool(ini, "MESSAGES", "bHideEngineFixesWarning", false, "# Disables the warning message on startup if Engine Fixes is not detected.");
 
-		settings->slowMotionMenus[RE::BarterMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_BarterMenu", false);
-		settings->slowMotionMenus[RE::BookMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_BookMenu", false);
-		//settings->slowMotionMenus[RE::Console::MENU_NAME.data()] = ini.GetBoolValue("UNPAUSED_MENUS", "bEnableSlowMotion_Console", false);
-		settings->slowMotionMenus[RE::ContainerMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_ContainerMenu", false);
-		settings->slowMotionMenus[RE::FavoritesMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_FavoritesMenu", false);
-		settings->slowMotionMenus[RE::GiftMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_GiftMenu", false);
-		settings->slowMotionMenus[RE::InventoryMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_InventoryMenu", false);
-		settings->slowMotionMenus[RE::JournalMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_JournalMenu", false);
-		settings->slowMotionMenus[RE::LevelUpMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_LevelUpMenu", false);
-		settings->slowMotionMenus[RE::LockpickingMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_LockpickingMenu", false);
-		settings->slowMotionMenus[RE::MagicMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_MagicMenu", false);
-		settings->slowMotionMenus[RE::MapMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_MapMenu", false);
-		settings->slowMotionMenus[RE::MessageBoxMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_MessageBoxMenu", false);
-		settings->slowMotionMenus[RE::ModManagerMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_ModManagerMenu", false);
-		settings->slowMotionMenus[RE::SleepWaitMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_SleepWaitMenu", false);
-		settings->slowMotionMenus[RE::StatsMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_StatsMenu", false);
-		settings->slowMotionMenus[RE::TrainingMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_TrainingMenu", false);
-		settings->slowMotionMenus[RE::TutorialMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_TutorialMenu", false);
-		settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_TweenMenu", false);
-		settings->slowMotionMenus["CustomMenu"] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_CustomMenu", false);
-		settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", false);
-		settings->slowMotionMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("SLOWMOTION", "bEnableSlowMotion_DragonbornsBestiary_BestiaryMenu", false);
+		IniSection(ini, "MAP_MENU");
+		settings->mapMenuAmbientSoundLoop = IniGetBool(ini, "MAP_MENU", "bMapMenuAmbientSoundLoop", false, "# If enabled, the map menu looping ambient sound will play as normal. By default it is disabled since the game world is unpaused and both would play simultaneously.");
+		settings->mapMenuCustomSky = IniGetBool(ini, "MAP_MENU", "bMapMenuCustomSky", true, "# If enabled, the map menu will use a separate sky/weather state decoupled from the real world weather.\n# This prevents the map from affecting gameplay (e.g. weather changes, precipitation), but it can be invasive.\n# Highly recommended to keep it enabled, but can be disabled if it conflicts with something.");
 
-		ini.SetDoubleValue("SLOWMOTION", "fSlowMotionMultiplier", settings->slowMotionMultiplier, "# This is the multiplier that will affect the game speed when a menu is open.\n# Default is 0.3, which is 30% of the full speed\n# Values lower than 0.25-0.3 can cause physics issues and are not recommended.\n# This feature also doesn't play nice with other sources of slowdowns, as it won't stack properly (like potion effects or the Slow Time shout).", true);
-		ini.SetBoolValue("SLOWMOTION", "bSlowMotionCombatOnly", settings->slowMotionCombatOnly, "# If enabled, slow-motion will only be applied when the player is in combat.", true);
-
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_BarterMenu", settings->slowMotionMenus[RE::BarterMenu::MENU_NAME.data()], "#  Enable or disable slow-motion when a menu is open. Configurable on a per-menu basis.", true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_BookMenu", settings->slowMotionMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_ContainerMenu", settings->slowMotionMenus[RE::ContainerMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_FavoritesMenu", settings->slowMotionMenus[RE::FavoritesMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_GiftMenu", settings->slowMotionMenus[RE::GiftMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_InventoryMenu", settings->slowMotionMenus[RE::InventoryMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_JournalMenu", settings->slowMotionMenus[RE::JournalMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_LevelUpMenu", settings->slowMotionMenus[RE::LevelUpMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_LockpickingMenu", settings->slowMotionMenus[RE::LockpickingMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_MagicMenu", settings->slowMotionMenus[RE::MagicMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_MapMenu", settings->slowMotionMenus[RE::MapMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_MessageBoxMenu", settings->slowMotionMenus[RE::MessageBoxMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_ModManagerMenu", settings->slowMotionMenus[RE::ModManagerMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_SleepWaitMenu", settings->slowMotionMenus[RE::SleepWaitMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_StatsMenu", settings->slowMotionMenus[RE::StatsMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_TrainingMenu", settings->slowMotionMenus[RE::TrainingMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_TutorialMenu", settings->slowMotionMenus[RE::TutorialMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_TweenMenu", settings->slowMotionMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_CustomMenu", settings->slowMotionMenus["CustomMenu"], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_QuestJournalOverhaul_QuestMenu", settings->slowMotionMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("SLOWMOTION", "bEnableSlowMotion_DragonbornsBestiary_BestiaryMenu", settings->slowMotionMenus[BestiaryMenuEx::MENU_NAME.data()], nullptr, true);
-
-		ini.SetValue("COMBAT_ALERT_OVERLAY", nullptr, nullptr, "# Shows a blinking red overlay when your character is in combat. Especially useful in full screen menus. You can enable or disable it individually for each menu.");
-
-		//CombatAlertOverlay
-		settings->overlayMenus[RE::BarterMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BarterMenu", true);
-		settings->overlayMenus[RE::BookMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BookMenu", true);
-		settings->overlayMenus[RE::ContainerMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_ContainerMenu", true);
-		settings->overlayMenus[RE::DialogueMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_DialogueMenu", true);
-		settings->overlayMenus[RE::FavoritesMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_FavoritesMenu", true);
-		settings->overlayMenus[RE::GiftMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_GiftMenu", true);
-		settings->overlayMenus[RE::InventoryMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_InventoryMenu", true);
-		settings->overlayMenus[RE::JournalMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_JournalMenu", true);
-		settings->overlayMenus[RE::LevelUpMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_LevelUpMenu", true);
-		settings->overlayMenus[RE::LockpickingMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_LockpickingMenu", true);
-		settings->overlayMenus[RE::MagicMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_MagicMenu", true);
-		settings->overlayMenus[RE::MapMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_MapMenu", true);
-		settings->overlayMenus[RE::MessageBoxMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_MessageBoxMenu", true);
-		settings->overlayMenus[RE::ModManagerMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_ModManagerMenu", true);
-		settings->overlayMenus[RE::SleepWaitMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_SleepWaitMenu", true);
-		settings->overlayMenus[RE::StatsMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_StatsMenu", true);
-		settings->overlayMenus[RE::TrainingMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TrainingMenu", true);
-		settings->overlayMenus[RE::TutorialMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TutorialMenu", true);
-		settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", true);
-		settings->overlayMenus["CustomMenu"] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", true);
-		settings->overlayMenus[QuestMenuEx::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", true);
-		settings->overlayMenus[BestiaryMenuEx::MENU_NAME.data()] = ini.GetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_DragonbornsBestiary_BestiaryMenu", true);
-
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BarterMenu", settings->overlayMenus[RE::BarterMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_BookMenu", settings->overlayMenus[RE::BookMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_DialogueMenu", settings->overlayMenus[RE::DialogueMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_ContainerMenu", settings->overlayMenus[RE::ContainerMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_FavoritesMenu", settings->overlayMenus[RE::FavoritesMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_GiftMenu", settings->overlayMenus[RE::GiftMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_InventoryMenu", settings->overlayMenus[RE::InventoryMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_JournalMenu", settings->overlayMenus[RE::JournalMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_LevelUpMenu", settings->overlayMenus[RE::LevelUpMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_LockpickingMenu", settings->overlayMenus[RE::LockpickingMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_MagicMenu", settings->overlayMenus[RE::MagicMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_MapMenu", settings->overlayMenus[RE::MapMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_MessageBoxMenu", settings->overlayMenus[RE::MessageBoxMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_ModManagerMenu", settings->overlayMenus[RE::ModManagerMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_SleepWaitMenu", settings->overlayMenus[RE::SleepWaitMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_StatsMenu", settings->overlayMenus[RE::StatsMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TrainingMenu", settings->overlayMenus[RE::TrainingMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TutorialMenu", settings->overlayMenus[RE::TutorialMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_TweenMenu", settings->overlayMenus[RE::TweenMenu::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_CustomMenu", settings->overlayMenus["CustomMenu"], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_QuestJournalOverhaul_QuestMenu", settings->overlayMenus[QuestMenuEx::MENU_NAME.data()], nullptr, true);
-		ini.SetBoolValue("COMBAT_ALERT_OVERLAY", "bShowCAO_DragonbornsBestiary_BestiaryMenu", settings->overlayMenus[BestiaryMenuEx::MENU_NAME.data()], nullptr, true);
-
-		//HUD
-		settings->disableHUDModifications = ini.GetBoolValue("HUD", "bDisableHUDModifications", false);
-		settings->sneakMeterPosX = static_cast<float>(ini.GetDoubleValue("HUD", "fSneakMeterPosX", 24.0));
-		settings->sneakMeterPosY = static_cast<float>(ini.GetDoubleValue("HUD", "fSneakMeterPosY", 120.0));
-
-		ini.SetBoolValue("HUD", "bDisableHUDModifications", settings->disableHUDModifications, "# If set to true, SkyrimSouls will not attempt to modify the location of the sneak meter. Use it if you have a compatibility issue with something", true);
-		ini.SetDoubleValue("HUD", "fSneakMeterPosX", settings->sneakMeterPosX, "# The position where the sneak meter will appear on the screen when a menu is open. It's necessary as some menu elements would hide it otherwise (eg. lockpicking).\n# The values are a bit arbitrary so just try different values until you find what suits you.", true);
-		ini.SetDoubleValue("HUD", "fSneakMeterPosY", settings->sneakMeterPosY, nullptr, true);
-
-		//Blur
-		settings->disableBlur = ini.GetBoolValue("BLUR", "bDisableBlur", false);
-		ini.SetBoolValue("BLUR", "bDisableBlur", settings->disableBlur, "# If this is enabled, background blur will be disabled in menus", true);
-
-		//Messages
-		settings->hideEngineFixesWarning = ini.GetBoolValue("MESSAGES", "bHideEngineFixesWarning", false);
-		ini.SetBoolValue("MESSAGES", "bHideEngineFixesWarning", settings->hideEngineFixesWarning, "# Disables the warning message on startup if Engine Fixes is not detected.", true);
-
-		// Map Menu
-		settings->mapMenuAmbientSoundLoop = ini.GetBoolValue("MAP_MENU", "bMapMenuAmbientSoundLoop", false);
-		settings->mapMenuCustomSky = ini.GetBoolValue("MAP_MENU", "bMapMenuCustomSky", true);
-
-		ini.SetBoolValue("MAP_MENU", "bMapMenuAmbientSoundLoop", settings->mapMenuAmbientSoundLoop, "# If enabled, the map menu looping ambient sound will play as normal. By default it is disabled since the game world is unpaused and both would play simultaneously.", true);
-		ini.SetBoolValue("MAP_MENU", "bMapMenuCustomSky", settings->mapMenuCustomSky, "# If enabled, the map menu will use a separate sky/weather state decoupled from the real world weather.\n# This prevents the map from affecting gameplay (e.g. weather changes, precipitation), but it can be invasive.\n# Highly recommended to keep it enabled, but can be disabled if it conflicts with something.", true);
+		SKSE::log::info("Settings loaded.");
 
 		ini.SaveFile(R"(.\Data\SKSE\Plugins\SkyrimSoulsRE.ini)");
 	}
