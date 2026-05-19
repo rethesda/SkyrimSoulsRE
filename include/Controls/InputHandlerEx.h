@@ -1,4 +1,5 @@
 #pragma once
+#include "HookUtils.h"
 #include "SkyrimSoulsRE.h"
 
 namespace SkyrimSoulsRE
@@ -63,6 +64,6 @@ namespace SkyrimSoulsRE
 	template <class T>
 	inline void InputHandlerEx<T>::InstallHook(REL::Relocation<std::uintptr_t> a_vtbl, std::uint64_t a_offset)
 	{
-		_CanProcess = a_vtbl.write_vfunc(a_offset, &CanProcess_Hook);
+		_CanProcess = HookUtils::WriteVFunc(a_vtbl, a_offset, &CanProcess_Hook);
 	}
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include "HookUtils.h"
 
 namespace SkyrimSoulsRE
 {
@@ -29,6 +30,6 @@ namespace SkyrimSoulsRE
 	inline void MapInputHandlerEx<T>::InstallHook(REL::ID a_vtbl)
 	{
 		REL::Relocation<std::uintptr_t> vTable(a_vtbl);
-		_CanProcess = vTable.write_vfunc(0x1, &MapInputHandlerEx::CanProcess_Hook);
+		_CanProcess = HookUtils::WriteVFunc(vTable, 0x1, &MapInputHandlerEx::CanProcess_Hook);
 	}
 }
