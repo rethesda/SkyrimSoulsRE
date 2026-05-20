@@ -123,6 +123,7 @@ namespace SkyrimSoulsRE
 		if (!menu->PausesGame())
 		{
 			menu->menuFlags.set(RE::IMenu::Flag::kPausesGame);
+			menu->menuFlags.reset(static_cast<RE::IMenu::Flag>(MenuFlagEx::kUnpaused));
 			ui->numPausesGame++;
 			main->freezeTime = true;
 		}
