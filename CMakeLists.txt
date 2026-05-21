@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.31)
 # Setup project
 project(
 	SkyrimSoulsRE
-	VERSION 3.1.1
+	VERSION 3.1.2
 	LANGUAGES CXX
 )
 set(FORMATTED_NAME "Skyrim Souls RE")
