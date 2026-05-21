@@ -159,11 +159,6 @@ namespace Offsets
 		static constexpr REL::ID Value2(static_cast<std::uint64_t>(403437));
 	}
 
-	namespace ScrapHeap
-	{
-		static constexpr REL::ID HookedFunc(static_cast<std::uint64_t>(82084));
-	}
-
 	namespace Sky
 	{
 		static constexpr REL::ID UpdatePartial(static_cast<std::uint64_t>(26230));

@@ -24,10 +24,8 @@ namespace SkyrimSoulsRE::MenuProcessing
 		// Ideally ProcessMessages should be called before rendering, but that is very difficult to properly synchronize with the still running job threads
 		void MainThread_Hook(RE::ScrapHeap* a_this)
 		{
-			// Call original
-			using func_t = void (*)(RE::ScrapHeap*);
-			REL::Relocation<func_t> func(Offsets::ScrapHeap::HookedFunc.address());
-			func(a_this);
+			// Original
+			++a_this->keepPagesRequest;
 
 			// Add
 			RE::UI* ui = RE::UI::GetSingleton();
